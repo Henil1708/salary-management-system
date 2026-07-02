@@ -12,7 +12,8 @@
         "unknownCurrency": "Unknown currency",
         "invalidHireDate": "Invalid or missing hire date",
         "invalidSalary": "Invalid or missing salary",
-        "alreadyExists": "This value already exists"
+        "alreadyExists": "This value already exists",
+        "supersededInFile": "Superseded by a later row with the same email"
       },
       "auth": {
         "identifierRequired": "Email or username is required",
@@ -48,7 +49,9 @@
       "NOT_FOUND": "The requested resource was not found",
       "CONFLICT": "This record conflicts with an existing one",
       "RATE_LIMITED": "Too many attempts. Please try again later.",
-      "RESET_TOKEN_INVALID": "This link is invalid or has expired. Please request a new one."
+      "RESET_TOKEN_INVALID": "This link is invalid or has expired. Please request a new one.",
+      "IMPORT_FILE_REQUIRED": "Please attach a CSV file",
+      "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns"
     }
   },
   "common": {
