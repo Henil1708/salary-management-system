@@ -69,7 +69,8 @@
   },
   "auth": {
     "login": {
-      "title": "Sign in",
+      "title": "Welcome back",
+      "subtitle": "Sign in to your HR account",
       "identifierLabel": "Email or username",
       "passwordLabel": "Password",
       "submit": "Sign in",
@@ -87,7 +88,8 @@
       "invalidToken": "This link is invalid or has expired. Please request a new one.",
       "success": "Your password has been reset. You can now sign in."
     },
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "backToLogin": "Back to sign in"
   },
   "employee": {
     "directory": {

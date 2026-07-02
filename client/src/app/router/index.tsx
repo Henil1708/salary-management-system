@@ -7,6 +7,8 @@ import { PublicRoutes } from './public-routes';
 
 // Route-level pages are lazy — each feature ships as its own chunk
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPasswordPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 
 const withSuspense = (node: React.ReactNode) => (
@@ -25,7 +27,11 @@ const router = createBrowserRouter([
     children: [
       {
         element: <AuthLayout />,
-        children: [{ path: '/login', element: withSuspense(<LoginPage />) }],
+        children: [
+          { path: '/login', element: withSuspense(<LoginPage />) },
+          { path: '/forgot-password', element: withSuspense(<ForgotPasswordPage />) },
+          { path: '/reset-password', element: withSuspense(<ResetPasswordPage />) },
+        ],
       },
     ],
   },
