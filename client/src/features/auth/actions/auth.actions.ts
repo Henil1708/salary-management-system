@@ -18,12 +18,12 @@ import {
 // never rendered English — components translate at render time.
 
 export const login =
-  (input: LoginInput): AppThunk<Promise<boolean>> =>
+  (input: LoginInput, remember = true): AppThunk<Promise<boolean>> =>
   async (dispatch) => {
     dispatch({ type: LOGIN_REQUEST });
     try {
       const { user, accessToken, refreshToken } = await AuthService.login(input);
-      tokenStorage.setTokens(accessToken, refreshToken);
+      tokenStorage.setTokens(accessToken, refreshToken, remember);
       dispatch({ type: LOGIN_SUCCESS, payload: user });
       return true;
     } catch (error) {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Lock } from 'lucide-react';
 import { ResetPasswordInput, resetPasswordSchema } from '@salary/shared';
 import { useAppDispatch } from '@/app/store/types';
 import { Button } from '@/shared/components/ui/button';
@@ -67,7 +68,9 @@ export const ResetPasswordForm = () => {
             name="newPassword"
             label={t('auth.resetPassword.newPasswordLabel')}
             type="password"
+            placeholder={t('auth.login.passwordPlaceholder')}
             autoComplete="new-password"
+            icon={<Lock />}
           />
           {errorCode && <p className="text-sm text-destructive">{codeToMessage(t, errorCode)}</p>}
           <Button type="submit" className="w-full" disabled={!dirty || !isValid || isSubmitting}>

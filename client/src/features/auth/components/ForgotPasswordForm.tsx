@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Formik } from 'formik';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Mail } from 'lucide-react';
 import { ForgotPasswordInput, forgotPasswordSchema } from '@salary/shared';
 import { useAppDispatch } from '@/app/store/types';
 import { Button } from '@/shared/components/ui/button';
@@ -53,7 +54,9 @@ export const ForgotPasswordForm = () => {
           <TextField
             name="identifier"
             label={t('auth.login.identifierLabel')}
+            placeholder={t('auth.login.identifierPlaceholder')}
             autoComplete="username"
+            icon={<Mail />}
           />
           {errorCode && <p className="text-sm text-destructive">{codeToMessage(t, errorCode)}</p>}
           <Button type="submit" className="w-full" disabled={!dirty || !isValid || isSubmitting}>

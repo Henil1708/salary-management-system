@@ -5,10 +5,10 @@ const LoginPage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold">{t('auth.login.title')}</h1>
-        <p className="text-balance text-sm text-muted-foreground">{t('auth.login.subtitle')}</p>
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{t('auth.login.title')}</h1>
+        <p className="mt-1 text-muted-foreground">{t('auth.login.subtitle')}</p>
       </div>
       <LoginForm />
     </div>
