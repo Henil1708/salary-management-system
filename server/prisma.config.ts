@@ -5,6 +5,7 @@ export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
     path: 'prisma/migrations',
+    seed: 'ts-node -r tsconfig-paths/register prisma/seed.ts',
   },
   datasource: {
     // The CLI (migrate/studio) must use the direct connection — Supabase's
