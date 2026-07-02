@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project State
 
-This repository is currently **planning-stage only** — there is no application code, no `package.json`, and no monorepo scaffolding yet. It contains two planning documents and nothing else of substance:
+The **monorepo skeleton exists** (yarn workspaces: `shared/`, `server/`; `client/` not yet added): the server boots with a `/health` endpoint, env validation, and a Winston logger — no Prisma, auth, or features yet. Everything else is being added feature by feature with small incremental commits.
+
+Planning documents (the source of truth for all architecture decisions):
 
 - `PRD.md` — the one-page product requirements document (goal, scope, explicit out-of-scope list with reasoning).
 - `docs/TRADEOFFS.md` — the detailed architecture and trade-off reasoning behind every non-obvious decision (data model, seeding strategy, CSV import validation, auth/token architecture, monorepo & API contract, performance, deployment, testing).
+- **GitHub issue #2** — the file-by-file implementation blueprint for the `server/` + `shared/` scaffold (build order, per-file responsibilities, route table, Prisma schema field-by-field). Refer to it when implementing each server feature.
 
-**Read both files before writing any code.** They contain firm decisions already made (not open questions) — do not re-derive or second-guess them without a good reason; extend from them.
-
-Once the codebase exists, this section and the "Commands" section below should be rewritten to reflect the actual build/lint/test setup.
+**Read both planning files before writing any code.** They contain firm decisions already made (not open questions) — do not re-derive or second-guess them without a good reason; extend from them.
 
 ## What's Being Built
 
@@ -48,7 +49,7 @@ The assessment this project is built for explicitly grades *how* it was built (i
 3. **Exercise** — run the `/verify` skill (or `/run` to launch and screenshot the app) to confirm the feature actually works end-to-end, not just that it typechecks.
 4. **Review** — run the `feature-dev:code-reviewer` agent and/or the `/code-review` skill on the diff before committing.
 5. **Cleanup** — run the `code-simplifier:code-simplifier` agent and/or the `/simplify` skill for a quality-only pass (reuse, clarity, efficiency).
-6. **Commit** — use the `/commit` skill (or `/commit-push-pr` if opening a PR) to make a small, incremental commit. Prefer many small commits over one large dump — the commit history is a deliverable.
+6. **Commit** — use the `/commit` skill (or `/commit-push-pr` if opening a PR) to make a small, incremental commit. Prefer many small commits over one large dump — the commit history is a deliverable. **Commit messages must not mention Claude/Claude Code or include AI co-author trailers** (no `Co-Authored-By: Claude ...`, no "Generated with Claude Code") — AI usage is documented in `docs/AI_USAGE.md` instead, per `docs/TRADEOFFS.md` §9.
 
 Situational agents/skills — reach for these when the trigger applies, not on every feature:
 
@@ -66,4 +67,15 @@ Situational agents/skills — reach for these when the trigger applies, not on e
 
 ## Commands
 
-No build, lint, or test commands exist yet — there is no code to run them against. Once the monorepo is scaffolded, update this section with the actual commands (e.g. `npm run dev`, `npm run build`, `npm test`, `npm run seed`, per-workspace equivalents).
+**Package manager: yarn (yarn workspaces) — always use `yarn`, never `npm`, for installing and running scripts.**
+
+From the repo root:
+
+```bash
+yarn install          # Install all workspace dependencies
+yarn dev:server       # Start the API server with hot reload (ts-node-dev)
+yarn build            # Build shared, then server
+yarn lint             # Lint the server workspace
+```
+
+Per-workspace scripts run via `yarn workspace @salary/server <script>` / `yarn workspace @salary/shared <script>`. Update this section as new scripts (test, seed, prisma) land.
