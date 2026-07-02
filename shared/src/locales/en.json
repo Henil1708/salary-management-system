@@ -11,7 +11,8 @@
         "unknownStatus": "Unknown status",
         "unknownCurrency": "Unknown currency",
         "invalidHireDate": "Invalid or missing hire date",
-        "invalidSalary": "Invalid or missing salary"
+        "invalidSalary": "Invalid or missing salary",
+        "alreadyExists": "This value already exists"
       },
       "auth": {
         "identifierRequired": "Email or username is required",
@@ -39,6 +40,7 @@
     },
     "codes": {
       "INTERNAL": "Something went wrong. Please try again.",
+      "BAD_REQUEST": "Invalid request",
       "AUTH_INVALID_CREDENTIALS": "Invalid email/username or password",
       "AUTH_TOKEN_EXPIRED": "Your session has expired. Please sign in again.",
       "AUTH_UNAUTHORIZED": "Authentication required",
