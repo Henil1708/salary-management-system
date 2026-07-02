@@ -73,6 +73,10 @@ export const employeeListQuerySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('asc'),
 });
 
+export const employeeIdParamSchema = z.object({
+  id: z.string().uuid('errors.validation.common.invalid'),
+});
+
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
 export type EmployeeListQuery = z.infer<typeof employeeListQuerySchema>;

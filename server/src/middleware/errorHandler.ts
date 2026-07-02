@@ -42,9 +42,18 @@ export const errorHandler = (
     switch (err.code) {
       case 'P2002': {
         // Unique constraint — surface as a fail on the offending field so the
-        // client can show it inline (e.g. duplicate employee email)
-        const target = (err.meta?.['target'] as string[] | undefined)?.[0] ?? '_';
-        sendFail(res, { [target]: 'errors.validation.common.alreadyExists' });
+        // client can show it inline (e.g. duplicate employee email). Prisma 7
+        // driver adapters report the fields under driverAdapterError.cause;
+        // classic engines used meta.target — support both.
+        const meta = err.meta as
+          | {
+              target?: string[];
+              driverAdapterError?: { cause?: { constraint?: { fields?: string[] } } };
+            }
+          | undefined;
+        const field =
+          meta?.driverAdapterError?.cause?.constraint?.fields?.[0] ?? meta?.target?.[0] ?? '_';
+        sendFail(res, { [field]: 'errors.validation.common.alreadyExists' });
         return;
       }
       case 'P2025':
