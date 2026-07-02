@@ -1,18 +1,17 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { LoginForm } from '../components/LoginForm';
 
-// Shell only — the Formik login form (shared loginSchema) lands with the
-// auth feature PR (blueprint step 2, GitHub issue #14)
 const LoginPage = () => {
   const { t } = useTranslation();
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>{t('auth.login.title')}</CardTitle>
-      </CardHeader>
-      <CardContent />
-    </Card>
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{t('auth.login.title')}</h1>
+        <p className="mt-1 text-muted-foreground">{t('auth.login.subtitle')}</p>
+      </div>
+      <LoginForm />
+    </div>
   );
 };
 

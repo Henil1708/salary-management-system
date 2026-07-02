@@ -56,6 +56,8 @@
   },
   "common": {
     "appName": "Salary Management",
+    "brandName": "ACME",
+    "brandTagline": "Salary Management System",
     "loading": "Loading…",
     "save": "Save",
     "cancel": "Cancel",
@@ -69,9 +71,13 @@
   },
   "auth": {
     "login": {
-      "title": "Sign in",
+      "title": "Welcome back!",
+      "subtitle": "Sign in to your account to continue",
       "identifierLabel": "Email or username",
+      "identifierPlaceholder": "Enter your email or username",
       "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
       "submit": "Sign in",
       "forgotPasswordLink": "Forgot password?"
     },
@@ -87,7 +93,8 @@
       "invalidToken": "This link is invalid or has expired. Please request a new one.",
       "success": "Your password has been reset. You can now sign in."
     },
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "backToLogin": "Back to sign in"
   },
   "employee": {
     "directory": {
