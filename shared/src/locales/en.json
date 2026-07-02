@@ -140,16 +140,41 @@
     }
   },
   "dashboard": {
-    "title": "Insights Dashboard",
-    "headcount": "Headcount",
-    "averageSalary": "Average salary",
-    "medianSalary": "Median salary",
-    "totalPayrollCost": "Total payroll cost",
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}} 👋",
+    "cards": {
+      "totalEmployees": "Total Employees",
+      "activeCaption": "{{count}} active",
+      "averageSalary": "Average Salary",
+      "medianCaption": "Median {{value}}",
+      "totalPayroll": "Total Payroll",
+      "normalizedCaption": "Normalized to USD",
+      "countries": "Countries",
+      "currenciesCaption": "{{count}} currencies"
+    },
+    "salaryOverview": {
+      "title": "Salary Overview",
+      "average": "Average salary",
+      "median": "Median salary",
+      "employees": "Employees"
+    },
     "byDepartment": "By department",
     "byCountry": "By country",
     "byJobLevel": "By job level",
-    "payBands": "Pay bands",
-    "recentChanges": "Recent salary changes"
+    "departmentShare": {
+      "title": "Employees by Department",
+      "department": "Department",
+      "employees": "Employees",
+      "percentOfTotal": "% of Total"
+    },
+    "payrollByCountry": {
+      "title": "Payroll by Country",
+      "country": "Country",
+      "payroll": "Payroll"
+    },
+    "recentChanges": {
+      "title": "Recent Salary Updates"
+    }
   },
   "import": {
     "title": "Bulk Import (CSV)",
