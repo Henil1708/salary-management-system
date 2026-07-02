@@ -35,6 +35,7 @@ Key decisions to preserve when implementing (details/reasoning in `docs/TRADEOFF
 - **Dashboard aggregates are computed in SQL** (`GROUP BY`/`AVG`/`COUNT`), not pulled into the app layer — the employee list is always server-side paginated/filtered/sorted, never fetched in full to the client.
 - **Seed script** generates 10,000 employees deterministically (fixed faker seed) with realistic per-country/per-level salary bands (not flat random) and salary history, inserted in batches.
 - **UI strings are i18n-keyed from day one**, not hardcoded — every client string goes through a translation function (`t('key')`) against a resource file in `shared/locales/` (only `en.json` populated in v1). This keeps future multi-language support additive rather than a component-by-component retrofit; see `docs/TRADEOFFS.md` §5.
+- **Validation/error messages are locale keys too, never English sentences.** Zod schema messages in `shared/` are keys (`errors.validation.…`) resolved client-side with `t(key, VALIDATION_LIMITS)`; the `error` envelope's `code` maps to `errors.codes.<CODE>`. The server never translates (stateless) — except the CSV rejected-rows report, rendered server-side per the request's `?lang=`. Numeric limits live once in `VALIDATION_LIMITS` (rules + `{{placeholder}}` interpolation). A guard test in `shared/` enforces every schema message exists in `en.json`; see `docs/TRADEOFFS.md` §5.
 
 ## External Services
 
