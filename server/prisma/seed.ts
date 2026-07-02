@@ -8,7 +8,6 @@ import { faker } from '@faker-js/faker';
 import {
   COUNTRIES,
   DEPARTMENTS,
-  JOB_LEVELS,
   type CountryCode,
   type JobLevel,
 } from '@salary/shared';
