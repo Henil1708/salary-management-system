@@ -1,0 +1,18 @@
+{
+  "name": "salary-management-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Employee salary management system for HR — monorepo (client / server / shared)",
+  "workspaces": [
+    "shared",
+    "server"
+  ],
+  "scripts": {
+    "dev:server": "yarn workspace @salary/server dev",
+    "build": "yarn workspace @salary/shared build && yarn workspace @salary/server build",
+    "lint": "yarn workspace @salary/server lint"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
