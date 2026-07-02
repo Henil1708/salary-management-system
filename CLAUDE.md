@@ -19,7 +19,7 @@ Employee salary management software for an HR Manager to manage salary data for 
 
 ## Planned Architecture (per `docs/TRADEOFFS.md`)
 
-**Monorepo** (npm/pnpm workspaces): `client/`, `server/`, `shared/`. `shared/` holds Zod schemas, derived TypeScript types, reference constants (countries/currencies/job levels/departments), and the `ApiResponse<T>` envelope type — the single source of truth consumed by both apps so validation rules can't drift between frontend and backend.
+**Monorepo** (npm/pnpm workspaces): `client/`, `server/`, `shared/`. `shared/` holds Zod schemas, derived TypeScript types, reference constants (countries/currencies/job levels/departments), the `ApiResponse<T>` envelope type, and i18n translation resource files (`shared/locales/`) — the single source of truth consumed by both apps so validation rules and copy can't drift between frontend and backend.
 
 **Stack**: React + TypeScript + shadcn/ui + Formik (client) · Node.js + TypeScript + Express + Passport (server) · PostgreSQL via Prisma, hosted on Supabase · deployed to Vercel (client) / Render or Railway (server).
 
@@ -33,6 +33,7 @@ Key decisions to preserve when implementing (details/reasoning in `docs/TRADEOFF
 - **API responses** follow a JSend-style three-state envelope: `{ status: "success", data }` / `{ status: "fail", data: <field→message map> }` / `{ status: "error", message, code }`. The `fail` shape matches Zod's error map so it can feed directly into Formik field errors.
 - **Dashboard aggregates are computed in SQL** (`GROUP BY`/`AVG`/`COUNT`), not pulled into the app layer — the employee list is always server-side paginated/filtered/sorted, never fetched in full to the client.
 - **Seed script** generates 10,000 employees deterministically (fixed faker seed) with realistic per-country/per-level salary bands (not flat random) and salary history, inserted in batches.
+- **UI strings are i18n-keyed from day one**, not hardcoded — every client string goes through a translation function (`t('key')`) against a resource file in `shared/locales/` (only `en.json` populated in v1). This keeps future multi-language support additive rather than a component-by-component retrofit; see `docs/TRADEOFFS.md` §5.
 
 ## External Services
 

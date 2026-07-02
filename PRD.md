@@ -17,10 +17,12 @@ Salary data for 10,000 employees across multiple countries currently lives in sp
 - **Insights Dashboard**: headcount and average/median salary by country, department, and job level; total payroll cost normalized to one currency via a stored FX-rate table; highest/lowest pay bands; recent salary-change feed.
 - **Export**: CSV export of the current (filtered) employee/salary view.
 - **Seed data**: a script generating 10,000 realistic, deterministic employees with salary history across ~6–8 countries/currencies, departments, and job levels, for demo and grading.
+- **Internationalization-ready UI**: all UI copy is routed through an i18n key/translation layer (resource files under `shared/`) from day one, even though v1 ships English-only — so adding a new language later is additive (a new resource file), not a retrofit of every component.
 
 ## Scope — Explicitly Out (v1) — and Why
 | Excluded | Reasoning |
 |---|---|
+| Actual translated locales (non-English UI) | v1 ships English-only — no specific language requirement was given. The i18n *plumbing* is in place (see Scope-In) so adding a locale later is cheap; translating and QA'ing real content for a second language is deferred until one is actually requested. |
 | Multi-role RBAC / approval workflows | Only one persona (HR Manager) is specified; roles/approvals add scope with no stated requirement. |
 | Employee self-service portal / social login (SSO) | Spec calls for HR-only tooling with simple credential login; SSO adds IdP integration irrelevant to the goal. |
 | Payroll execution (tax calc, disbursement, bank rails) | This is a salary *record-keeping & reporting* tool, not a payroll processor — a materially different system. |

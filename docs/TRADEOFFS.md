@@ -163,6 +163,13 @@ Explicitly **not** trying to maximize security theater here — the brief is a p
 
 A shared Express error-handling middleware and a shared Zod-validation middleware are what actually produce `fail`/`error` responses, so individual route handlers only ever return `data` on the happy path — they don't hand-roll the envelope each time.
 
+**Internationalization (i18n) readiness.** No language beyond English is required now, but retrofitting i18n onto a component tree full of hardcoded strings later is expensive and error-prone (easy to miss strings, easy to break layout once text length changes). The cheap insurance is to pay a small, fixed cost up front instead:
+- Translation resource files live under `shared/locales/` (e.g. `shared/locales/en.json`), keyed by translation key (`employee.directory.searchPlaceholder`, `salary.history.title`, etc.) — not embedded in component code, and not duplicated between client validation-error copy and server-side messages where they overlap.
+- The client wires every user-facing string through an i18n library (e.g. `react-i18next`) from the very first component — `t('employee.directory.searchPlaceholder')` instead of a hardcoded string — even though only `en.json` exists in v1. This is the part that's expensive to retrofit later and cheap to do from the start.
+- Adding a second language later is then purely additive: drop a new `shared/locales/<locale>.json` next to the English one and register the locale — no component changes, no hunting for strings that got missed.
+- Numbers, currency, and dates (salary amounts, effective dates) already go through locale-aware `Intl` formatting rather than manual string formatting, since that's needed for multi-currency display regardless — it composes naturally with a future locale switch instead of needing separate handling.
+- Explicitly **not** doing now: actually translating content, RTL layout support, or locale-specific date/number format testing — those are only worth doing once a real second language is requested.
+
 ---
 
 ## 6. Performance & Scalability (10,000+ employees)
