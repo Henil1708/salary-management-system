@@ -1,0 +1,151 @@
+{
+  "errors": {
+    "validation": {
+      "common": {
+        "invalid": "This value is invalid",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email address",
+        "unknownDepartment": "Unknown department",
+        "unknownCountry": "Unknown country code",
+        "unknownJobLevel": "Unknown job level",
+        "unknownStatus": "Unknown status",
+        "unknownCurrency": "Unknown currency",
+        "invalidHireDate": "Invalid or missing hire date",
+        "invalidSalary": "Invalid or missing salary",
+        "alreadyExists": "This value already exists"
+      },
+      "auth": {
+        "identifierRequired": "Email or username is required",
+        "passwordRequired": "Password is required",
+        "tokenRequired": "Reset token is required",
+        "passwordTooShort": "Password must be at least {{passwordMin}} characters",
+        "passwordTooLong": "Password must be less than {{passwordMax}} characters",
+        "passwordNeedsUppercase": "Password must contain at least one uppercase letter",
+        "passwordNeedsLowercase": "Password must contain at least one lowercase letter",
+        "passwordNeedsNumber": "Password must contain at least one number"
+      },
+      "employee": {
+        "codeRequired": "Employee code is required",
+        "codeTooLong": "Employee code must be at most {{employeeCodeMax}} characters",
+        "firstNameRequired": "First name is required",
+        "firstNameTooLong": "First name must be at most {{nameMax}} characters",
+        "lastNameRequired": "Last name is required",
+        "lastNameTooLong": "Last name must be at most {{nameMax}} characters"
+      },
+      "salary": {
+        "invalidEffectiveDate": "Invalid or missing effective date",
+        "reasonRequired": "Reason is required",
+        "reasonTooLong": "Reason must be at most {{reasonMax}} characters"
+      }
+    },
+    "codes": {
+      "INTERNAL": "Something went wrong. Please try again.",
+      "BAD_REQUEST": "Invalid request",
+      "AUTH_INVALID_CREDENTIALS": "Invalid email/username or password",
+      "AUTH_TOKEN_EXPIRED": "Your session has expired. Please sign in again.",
+      "AUTH_UNAUTHORIZED": "Authentication required",
+      "FORBIDDEN": "You don't have permission to do this",
+      "NOT_FOUND": "The requested resource was not found",
+      "CONFLICT": "This record conflicts with an existing one",
+      "RATE_LIMITED": "Too many attempts. Please try again later.",
+      "RESET_TOKEN_INVALID": "This link is invalid or has expired. Please request a new one."
+    }
+  },
+  "common": {
+    "appName": "Salary Management",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "search": "Search",
+    "export": "Export CSV",
+    "noResults": "No results found",
+    "errors": {
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "identifierLabel": "Email or username",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "forgotPasswordLink": "Forgot password?"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "submit": "Send reset link",
+      "genericConfirmation": "If that account exists, we've sent a reset link to its email address."
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "newPasswordLabel": "New password",
+      "submit": "Reset password",
+      "invalidToken": "This link is invalid or has expired. Please request a new one.",
+      "success": "Your password has been reset. You can now sign in."
+    },
+    "logout": "Sign out"
+  },
+  "employee": {
+    "directory": {
+      "title": "Employee Directory",
+      "searchPlaceholder": "Search by name, email or employee ID",
+      "filters": {
+        "department": "Department",
+        "country": "Country",
+        "jobLevel": "Job level",
+        "status": "Status"
+      },
+      "columns": {
+        "employeeCode": "Employee ID",
+        "name": "Name",
+        "email": "Email",
+        "department": "Department",
+        "country": "Country",
+        "jobLevel": "Level",
+        "status": "Status",
+        "currentSalary": "Current salary"
+      }
+    },
+    "profile": {
+      "title": "Employee Profile",
+      "hireDate": "Hire date",
+      "editTitle": "Edit employee"
+    }
+  },
+  "salary": {
+    "history": {
+      "title": "Salary History",
+      "columns": {
+        "amount": "Amount",
+        "currency": "Currency",
+        "effectiveDate": "Effective date",
+        "reason": "Reason"
+      },
+      "current": "Current"
+    },
+    "revision": {
+      "title": "New salary revision",
+      "submit": "Add revision"
+    }
+  },
+  "dashboard": {
+    "title": "Insights Dashboard",
+    "headcount": "Headcount",
+    "averageSalary": "Average salary",
+    "medianSalary": "Median salary",
+    "totalPayrollCost": "Total payroll cost",
+    "byDepartment": "By department",
+    "byCountry": "By country",
+    "byJobLevel": "By job level",
+    "payBands": "Pay bands",
+    "recentChanges": "Recent salary changes"
+  },
+  "import": {
+    "title": "Bulk Import (CSV)",
+    "uploadPrompt": "Upload a CSV file to create or update employees and salaries",
+    "submit": "Import",
+    "summary": "{{imported}} created, {{updated}} updated, {{rejected}} rejected",
+    "downloadErrors": "Download rejected rows"
+  }
+}

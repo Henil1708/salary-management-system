@@ -10,6 +10,7 @@ Planning documents (the source of truth for all architecture decisions):
 
 - `PRD.md` — the one-page product requirements document (goal, scope, explicit out-of-scope list with reasoning).
 - `docs/TRADEOFFS.md` — the detailed architecture and trade-off reasoning behind every non-obvious decision (data model, seeding strategy, CSV import validation, auth/token architecture, monorepo & API contract, performance, deployment, testing).
+- `docs/STRUCTURE.md` — the monorepo folder structure: what each directory is for, per-file responsibilities, layering rules (routes → controllers → services → prisma) and conventions. **Consult it before adding files so new code lands in the right place; update it when the structure changes.**
 - **GitHub issue #2** — the file-by-file implementation blueprint for the `server/` + `shared/` scaffold (build order, per-file responsibilities, route table, Prisma schema field-by-field). Refer to it when implementing each server feature.
 
 **Read both planning files before writing any code.** They contain firm decisions already made (not open questions) — do not re-derive or second-guess them without a good reason; extend from them.
@@ -35,6 +36,7 @@ Key decisions to preserve when implementing (details/reasoning in `docs/TRADEOFF
 - **Dashboard aggregates are computed in SQL** (`GROUP BY`/`AVG`/`COUNT`), not pulled into the app layer — the employee list is always server-side paginated/filtered/sorted, never fetched in full to the client.
 - **Seed script** generates 10,000 employees deterministically (fixed faker seed) with realistic per-country/per-level salary bands (not flat random) and salary history, inserted in batches.
 - **UI strings are i18n-keyed from day one**, not hardcoded — every client string goes through a translation function (`t('key')`) against a resource file in `shared/locales/` (only `en.json` populated in v1). This keeps future multi-language support additive rather than a component-by-component retrofit; see `docs/TRADEOFFS.md` §5.
+- **Validation/error messages are locale keys too, never English sentences.** Zod schema messages in `shared/` are keys (`errors.validation.…`) resolved client-side with `t(key, VALIDATION_LIMITS)`; the `error` envelope's `code` maps to `errors.codes.<CODE>`. The server never translates (stateless) — except the CSV rejected-rows report, rendered server-side per the request's `?lang=`. Numeric limits live once in `VALIDATION_LIMITS` (rules + `{{placeholder}}` interpolation). A guard test in `shared/` enforces every schema message exists in `en.json`; see `docs/TRADEOFFS.md` §5.
 
 ## External Services
 
@@ -76,6 +78,7 @@ yarn install          # Install all workspace dependencies
 yarn dev:server       # Start the API server with hot reload (ts-node-dev)
 yarn build            # Build shared, then server
 yarn lint             # Lint the server workspace
+yarn test             # Shared guard tests (node:test) + server unit tests (jest)
 ```
 
 Per-workspace scripts run via `yarn workspace @salary/server <script>` / `yarn workspace @salary/shared <script>`. Update this section as new scripts (test, seed, prisma) land.
