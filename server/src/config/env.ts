@@ -8,6 +8,10 @@ dotenv.config();
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
+  // Pooled (pgbouncer) connection for app queries; direct connection for
+  // Prisma migrations (read by prisma.config.ts)
+  DATABASE_URL: z.string().url(),
+  DIRECT_URL: z.string().url(),
   CORS_ORIGIN: z.string().url().default('http://localhost:5173'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
 });

@@ -3,8 +3,11 @@ import { env } from '@config/env';
 import http from 'http';
 import createApp from './app';
 import logger from '@utils/logger';
+import { connectDatabase, disconnectDatabase } from '@config/database';
 
-const startServer = (): void => {
+const startServer = async (): Promise<void> => {
+  await connectDatabase();
+
   const app = createApp();
   const httpServer = http.createServer(app);
 
@@ -15,8 +18,9 @@ const startServer = (): void => {
 
   const gracefulShutdown = (signal: string): void => {
     logger.info(`${signal} received, shutting down...`);
-    server.close(() => {
+    server.close(async () => {
       logger.info('HTTP server closed');
+      await disconnectDatabase();
       process.exit(0);
     });
 
@@ -30,4 +34,7 @@ const startServer = (): void => {
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 };
 
-startServer();
+startServer().catch((error) => {
+  logger.error('Failed to start server', { error });
+  process.exit(1);
+});
