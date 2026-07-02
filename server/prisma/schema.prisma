@@ -1,0 +1,127 @@
+// Data model per docs/TRADEOFFS.md §1 — see GitHub issue #2 for the
+// field-by-field blueprint. Datasource URL lives in prisma.config.ts (Prisma 7).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ================================
+// Auth
+// ================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  // HR account's job title (display/context only in v1 — no RBAC)
+  designation  String
+  // Incremented on password reset / logout-everywhere; refresh tokens carrying
+  // an older version fail the check on next use (stateless revocation)
+  tokenVersion Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  resetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  // SHA-256 of the raw token; the raw value only ever exists in the emailed link
+  tokenHash String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ================================
+// Reference data
+// ================================
+
+model Department {
+  id   String @id @default(uuid())
+  name String @unique
+
+  employees Employee[]
+}
+
+model Country {
+  id              String @id @default(uuid())
+  code            String @unique
+  name            String
+  defaultCurrency String
+
+  employees Employee[]
+  fxRates   FxRate[]
+}
+
+model FxRate {
+  id        String   @id @default(uuid())
+  countryId String
+  currency  String
+  rateToUSD Decimal  @db.Decimal(14, 6)
+  asOf      DateTime @db.Date
+
+  country Country @relation(fields: [countryId], references: [id])
+
+  @@unique([currency, asOf])
+}
+
+// ================================
+// Employees & salaries
+// ================================
+
+model Employee {
+  id           String   @id @default(uuid())
+  employeeCode String   @unique
+  firstName    String
+  lastName     String
+  email        String   @unique
+  departmentId String
+  countryId    String
+  // Validated against the reference lists in @salary/shared (single source of
+  // truth for client + server) rather than duplicated as Prisma enums
+  jobLevel     String
+  status       String   @default("ACTIVE")
+  hireDate     DateTime @db.Date
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department    Department     @relation(fields: [departmentId], references: [id])
+  country       Country        @relation(fields: [countryId], references: [id])
+  salaryRecords SalaryRecord[]
+
+  @@index([departmentId])
+  @@index([countryId])
+  @@index([jobLevel])
+  @@index([status])
+}
+
+// Append-only ledger: a salary change is a new row, never an overwrite.
+// isCurrent is denormalized and flipped transactionally on write so the
+// current-salary lookup stays a single indexed read.
+model SalaryRecord {
+  id            String   @id @default(uuid())
+  employeeId    String
+  amount        Decimal  @db.Decimal(14, 2)
+  currency      String
+  effectiveDate DateTime @db.Date
+  reason        String
+  isCurrent     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, isCurrent])
+  @@index([createdAt])
+}

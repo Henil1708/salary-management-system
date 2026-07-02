@@ -1,0 +1,17 @@
+{
+  "name": "@salary/shared",
+  "version": "0.1.0",
+  "description": "Shared Zod schemas, types, reference constants and i18n locales — single source of truth for client and server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
