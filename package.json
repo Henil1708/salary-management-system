@@ -10,7 +10,8 @@
   "scripts": {
     "dev:server": "yarn workspace @salary/server dev",
     "build": "yarn workspace @salary/shared build && yarn workspace @salary/server build",
-    "lint": "yarn workspace @salary/server lint"
+    "lint": "yarn workspace @salary/server lint",
+    "test": "yarn workspace @salary/shared test && yarn workspace @salary/server test"
   },
   "engines": {
     "node": ">=22.0.0"
