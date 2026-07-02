@@ -10,6 +10,7 @@ Planning documents (the source of truth for all architecture decisions):
 
 - `PRD.md` — the one-page product requirements document (goal, scope, explicit out-of-scope list with reasoning).
 - `docs/TRADEOFFS.md` — the detailed architecture and trade-off reasoning behind every non-obvious decision (data model, seeding strategy, CSV import validation, auth/token architecture, monorepo & API contract, performance, deployment, testing).
+- `docs/STRUCTURE.md` — the monorepo folder structure: what each directory is for, per-file responsibilities, layering rules (routes → controllers → services → prisma) and conventions. **Consult it before adding files so new code lands in the right place; update it when the structure changes.**
 - **GitHub issue #2** — the file-by-file implementation blueprint for the `server/` + `shared/` scaffold (build order, per-file responsibilities, route table, Prisma schema field-by-field). Refer to it when implementing each server feature.
 
 **Read both planning files before writing any code.** They contain firm decisions already made (not open questions) — do not re-derive or second-guess them without a good reason; extend from them.

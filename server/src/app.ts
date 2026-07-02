@@ -1,7 +1,9 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import passport, { configurePassport } from '@config/passport';
 import { env } from '@config/env';
+import { errorHandler, notFoundHandler } from '@middleware/errorHandler';
 import routes from '@routes/index';
 
 const createApp = (): Application => {
@@ -21,7 +23,13 @@ const createApp = (): Application => {
 
   app.use(express.json());
 
+  configurePassport();
+  app.use(passport.initialize());
+
   app.use('/api/v1', routes);
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 };
