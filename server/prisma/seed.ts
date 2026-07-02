@@ -8,7 +8,6 @@ import { faker } from '@faker-js/faker';
 import {
   COUNTRIES,
   DEPARTMENTS,
-  JOB_LEVELS,
   type CountryCode,
   type JobLevel,
 } from '@salary/shared';
@@ -21,6 +20,8 @@ faker.seed(42);
 const EMPLOYEE_COUNT = 10_000;
 const BATCH_SIZE = 1_000;
 const FX_AS_OF = new Date('2026-01-01');
+// No salary record may be effective after this date (fixed, for determinism)
+const HISTORY_CUTOFF = new Date('2026-06-30');
 
 const HR_USER = {
   email: 'hr@acme.com',
@@ -229,10 +230,10 @@ const generateEmployees = (
 
     let amount = sampleSalary(countryCode, jobLevel);
     let effectiveDate = hireDate;
+    const records: Omit<SalaryRecordSeed, 'isCurrent'>[] = [];
 
     for (let r = 0; r < recordCount; r++) {
-      const isLast = r === recordCount - 1;
-      salaryRecords.push({
+      records.push({
         employeeId,
         amount,
         currency,
@@ -243,17 +244,25 @@ const generateEmployees = (
             : RAISE_REASONS[
                 Math.floor(faker.number.float({ min: 0, max: 1 }) * RAISE_REASONS.length)
               ]!,
-        isCurrent: isLast,
       });
 
-      if (!isLast) {
-        // each raise: +4–12%, effective ~1 year later
-        amount = Math.round((amount * faker.number.float({ min: 1.04, max: 1.12 })) / 100) * 100;
-        effectiveDate = new Date(
-          effectiveDate.getTime() + faker.number.int({ min: 330, max: 420 }) * 86_400_000
-        );
+      // each raise: +4–12%, effective ~1 year later — but never beyond the
+      // fixed cutoff (a fixed constant, not `new Date()`, so determinism
+      // holds): a future-dated "raise" would look wrong in the
+      // recent-changes feed
+      amount = Math.round((amount * faker.number.float({ min: 1.04, max: 1.12 })) / 100) * 100;
+      effectiveDate = new Date(
+        effectiveDate.getTime() + faker.number.int({ min: 330, max: 420 }) * 86_400_000
+      );
+      if (effectiveDate > HISTORY_CUTOFF) {
+        break;
       }
     }
+
+    // only the latest surviving record is current
+    records.forEach((record, index) =>
+      salaryRecords.push({ ...record, isCurrent: index === records.length - 1 })
+    );
   }
 
   return { employees, salaryRecords };
