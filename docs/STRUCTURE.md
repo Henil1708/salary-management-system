@@ -94,6 +94,31 @@ server/
 
 Layering rule: **routes → controllers → services → prisma**. Controllers stay thin (call a service, `sendSuccess`); services hold business logic and never touch `req`/`res`; the error middleware is the only place `fail`/`error` envelopes are built.
 
-## `client/` — not yet created
+## `client/` — `@salary/client`
 
-Planned: React + TypeScript + shadcn/ui + Formik, all strings through `react-i18next` against `shared/locales/`, forms validated with the same shared Zod schemas. Structure will be documented here when it's scaffolded.
+React + Vite + **classic Redux** (actionTypes/actions/reducers/selectors — NOT Redux Toolkit slices), feature-based architecture. Full blueprint with per-file responsibilities and the 13 architecture rules: **GitHub issue #14**.
+
+```
+client/
+├── vite.config.ts         # @/ alias; @salary/shared aliased to ../shared/src (compiled from source)
+├── components.json        # shadcn/ui → src/shared/components/ui
+├── tailwind.config.ts / postcss.config.js
+└── src/
+    ├── main.tsx           # <Providers><AppRouter/></Providers>
+    ├── app/
+    │   ├── store/         # store.ts (legacy_createStore + thunk), rootReducer, types (RootState/AppDispatch/AppThunk + typed hooks)
+    │   ├── router/        # createBrowserRouter; private-routes (auth guard, 'restoring' spinner), public-routes (login bounce)
+    │   ├── layouts/       # dashboard-layout (sidebar/header/user), auth-layout (centered card)
+    │   └── providers/     # redux → theme → i18n (i18next initialized from @salary/shared enLocale)
+    ├── features/          # one folder per domain: auth, employees, salary, dashboard, import-export
+    │   └── <feature>/     # actions/ (actionTypes + thunks), reducers/, selectors/, services/,
+    │                      #   pages/, components/, hooks/, index.ts (public surface)
+    ├── shared/
+    │   ├── components/ui/ # shadcn-generated primitives (eslint-ignored)
+    │   ├── services/      # api-client (JSend unwrapping, ApiFieldError/ApiCodeError, silent single-flight refresh), token-storage (localStorage)
+    │   ├── utils/         # cn, errors (tError w/ VALIDATION_LIMITS interpolation, codeToMessage)
+    │   └── config/env.ts  # typed VITE_* access, fail-fast
+    ├── assets/  styles/globals.css
+```
+
+Client rules (blueprint #14): components dispatch thunks, never call services; every state read goes through selectors; Redux stores locale keys/codes for errors, never English; API types and schemas come from `@salary/shared`, never redeclared; every string through `t()`.
