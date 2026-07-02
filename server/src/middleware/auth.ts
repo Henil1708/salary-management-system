@@ -4,7 +4,11 @@ import { UnauthorizedError } from '@utils/errors';
 
 // Wraps passport.authenticate so failures flow through our error handler as
 // JSend `error` envelopes instead of passport's bare 401 text responses.
-const authenticate = (strategy: 'jwt-access' | 'jwt-refresh', code: string) => {
+const authenticate = (
+  strategy: 'local' | 'jwt-access' | 'jwt-refresh',
+  message: string,
+  code: string
+) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     passport.authenticate(
       strategy,
@@ -14,7 +18,7 @@ const authenticate = (strategy: 'jwt-access' | 'jwt-refresh', code: string) => {
           return next(err);
         }
         if (!user) {
-          return next(new UnauthorizedError('Invalid or expired token', code));
+          return next(new UnauthorizedError(message, code));
         }
         req.user = user;
         next();
@@ -23,8 +27,23 @@ const authenticate = (strategy: 'jwt-access' | 'jwt-refresh', code: string) => {
   };
 };
 
+/** Login only — verifies identifier + password via the local strategy. */
+export const requireLocalCredentials = authenticate(
+  'local',
+  'Invalid email/username or password',
+  'AUTH_INVALID_CREDENTIALS'
+);
+
 /** Protects a route with the access-token strategy — no DB hit. */
-export const requireAuth = authenticate('jwt-access', 'AUTH_UNAUTHORIZED');
+export const requireAuth = authenticate(
+  'jwt-access',
+  'Invalid or expired token',
+  'AUTH_UNAUTHORIZED'
+);
 
 /** /auth/refresh only — verifies the refresh token AND the DB tokenVersion. */
-export const requireRefreshToken = authenticate('jwt-refresh', 'AUTH_TOKEN_EXPIRED');
+export const requireRefreshToken = authenticate(
+  'jwt-refresh',
+  'Invalid or expired refresh token',
+  'AUTH_TOKEN_EXPIRED'
+);

@@ -78,6 +78,7 @@ yarn install          # Install all workspace dependencies
 yarn dev:server       # Start the API server with hot reload (ts-node-dev)
 yarn build            # Build shared, then server
 yarn lint             # Lint the server workspace
+yarn test             # Shared guard tests (node:test) + server unit tests (jest)
 ```
 
 Per-workspace scripts run via `yarn workspace @salary/server <script>` / `yarn workspace @salary/shared <script>`. Update this section as new scripts (test, seed, prisma) land.
