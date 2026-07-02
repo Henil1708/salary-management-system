@@ -12,6 +12,7 @@ Planning documents (the source of truth for all architecture decisions):
 - `docs/TRADEOFFS.md` — the detailed architecture and trade-off reasoning behind every non-obvious decision (data model, seeding strategy, CSV import validation, auth/token architecture, monorepo & API contract, performance, deployment, testing).
 - `docs/STRUCTURE.md` — the monorepo folder structure: what each directory is for, per-file responsibilities, layering rules (routes → controllers → services → prisma) and conventions. **Consult it before adding files so new code lands in the right place; update it when the structure changes.**
 - **GitHub issue #2** — the file-by-file implementation blueprint for the `server/` + `shared/` scaffold (build order, per-file responsibilities, route table, Prisma schema field-by-field). Refer to it when implementing each server feature.
+- **GitHub issue #14** — the client blueprint: React + Vite + **classic Redux (actionTypes/actions/reducers/selectors — NOT Redux Toolkit slices)**, feature-based architecture (`app/`, `features/<f>/{actions,reducers,selectors,services,pages,components,hooks}`, `shared/`), the api-client contract (JSend unwrapping, silent refresh), and the 13 architecture rules. Refer to it when implementing each client feature.
 
 **Read both planning files before writing any code.** They contain firm decisions already made (not open questions) — do not re-derive or second-guess them without a good reason; extend from them.
 
@@ -76,8 +77,9 @@ From the repo root:
 ```bash
 yarn install          # Install all workspace dependencies
 yarn dev:server       # Start the API server with hot reload (ts-node-dev)
-yarn build            # Build shared, then server
-yarn lint             # Lint the server workspace
+yarn dev:client       # Start the Vite dev server (http://localhost:5173)
+yarn build            # Build shared → server → client
+yarn lint             # Lint server + client workspaces
 yarn test             # Shared guard tests (node:test) + server unit tests (jest)
 ```
 

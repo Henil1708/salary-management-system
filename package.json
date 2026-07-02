@@ -5,13 +5,15 @@
   "description": "Employee salary management system for HR \u2014 monorepo (client / server / shared)",
   "workspaces": [
     "shared",
-    "server"
+    "server",
+    "client"
   ],
   "scripts": {
     "dev:server": "yarn workspace @salary/server dev",
-    "build": "yarn workspace @salary/shared build && yarn workspace @salary/server build",
-    "lint": "yarn workspace @salary/server lint",
-    "test": "yarn workspace @salary/shared test && yarn workspace @salary/server test"
+    "build": "yarn workspace @salary/shared build && yarn workspace @salary/server build && yarn workspace @salary/client build",
+    "lint": "yarn workspace @salary/server lint && yarn workspace @salary/client lint",
+    "test": "yarn workspace @salary/shared test && yarn workspace @salary/server test",
+    "dev:client": "yarn workspace @salary/client dev"
   },
   "engines": {
     "node": ">=22.0.0"
