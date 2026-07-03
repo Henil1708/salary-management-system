@@ -87,6 +87,7 @@
     "edit": "Edit",
     "search": "Search",
     "export": "Export CSV",
+    "exporting": "Exporting…",
     "perMonth": "/mo",
     "noResults": "No results found",
     "toast": {
@@ -375,10 +376,19 @@
     }
   },
   "import": {
-    "title": "Bulk Import (CSV)",
-    "uploadPrompt": "Upload a CSV file to create or update employees and salaries",
+    "title": "Import CSV",
+    "button": "Import",
+    "uploadPrompt": "Upload a CSV to create or update employees and their salaries. Existing employees are matched by email.",
+    "chooseFile": "Choose CSV file",
     "submit": "Import",
-    "summary": "{{imported}} created, {{updated}} updated, {{rejected}} rejected",
-    "downloadErrors": "Download rejected rows"
+    "importing": "Importing…",
+    "resultTitle": "Import complete",
+    "imported": "Created",
+    "updated": "Updated",
+    "unchanged": "Unchanged",
+    "rejected": "Rejected",
+    "downloadErrors": "Download rejected rows",
+    "done": "Done",
+    "genericError": "Import failed. Check the file and try again."
   }
 }
