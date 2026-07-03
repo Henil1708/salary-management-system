@@ -34,13 +34,15 @@ export const PayrollTrendChart = ({ data }: PayrollTrendChartProps) => {
   ];
 
   return (
-    <Card>
+    // fill the grid cell's height (matched to the taller department card) so
+    // the chart grows to fit instead of leaving whitespace below it
+    <Card className="flex h-full flex-col">
       <CardHeader>
         <CardTitle className="text-base">{t('dashboard.payrollTrend.title')}</CardTitle>
         <p className="text-xs text-muted-foreground">{t('dashboard.payrollTrend.subtitle')}</p>
       </CardHeader>
-      <CardContent>
-        <div className="h-64">
+      <CardContent className="flex-1">
+        <div className="h-full min-h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
               <defs>

@@ -6,6 +6,7 @@ import {
   PayrollTrendPoint,
   RecentChange,
 } from '@salary/shared';
+import { DateRange } from '../services/dashboard.service';
 import {
   DashboardAction,
   FETCH_DIMENSION_FAILURE,
@@ -16,6 +17,7 @@ import {
   FETCH_SUMMARY_REQUEST,
   FETCH_SUMMARY_SUCCESS,
   FETCH_TREND_SUCCESS,
+  SET_RANGE,
 } from '../actions/dashboard.actionTypes';
 
 export interface DashboardState {
@@ -23,6 +25,7 @@ export interface DashboardState {
   byDimension: Partial<Record<DashboardDimension, DimensionStat[]>>;
   payrollTrend: PayrollTrendPoint[];
   recentChanges: RecentChange[];
+  range: DateRange;
   loading: boolean;
   errorCode: string | null;
 }
@@ -32,6 +35,7 @@ const initialState: DashboardState = {
   byDimension: {},
   payrollTrend: [],
   recentChanges: [],
+  range: {},
   loading: false,
   errorCode: null,
 };
@@ -55,6 +59,9 @@ export const dashboardReducer = (
       return { ...state, recentChanges: action.payload };
     case FETCH_TREND_SUCCESS:
       return { ...state, payrollTrend: action.payload };
+    case SET_RANGE:
+      // new window → drop cached dimensions so they refetch as-of the new date
+      return { ...state, range: action.payload, byDimension: {} };
     case FETCH_SUMMARY_FAILURE:
     case FETCH_DIMENSION_FAILURE:
     case FETCH_RECENT_FAILURE:

@@ -9,36 +9,52 @@ import {
 import prisma from '@config/database';
 import { Prisma } from '../generated/prisma/client';
 
-// All aggregates are computed in SQL — GROUP BY/AVG/percentile_cont over the
-// isCurrent ledger rows — never by pulling employees into the app layer
-// (docs/TRADEOFFS.md §6). Cross-currency comparability comes from normalizing
-// to USD via the latest FxRate per currency; aggregates cover ACTIVE
-// employees (payroll cost of people actually on payroll).
+// All aggregates are computed in SQL (docs/TRADEOFFS.md §6), never pulled into
+// the app layer. Everything is point-in-time "as of" a date (default now):
+// the `pop` CTE is the set of currently-active employees with the salary in
+// effect at `asOf` (latest SalaryRecord with effectiveDate ≤ asOf),
+// normalized to USD via the latest FxRate per currency. As-of "today" this
+// reduces to the current (isCurrent) salaries.
+//
+// Caveat: we don't track employment status history, so "active as of a past
+// date" uses currently-active employees hired on/before that date — a proxy.
 
-// Latest rate per currency — today the seed writes one asOf, but the query
-// stays correct when rates get refreshed later.
-const FX_CTE = Prisma.sql`
+const resolveAsOf = (asOf?: Date): Date => asOf ?? new Date();
+
+// WITH fx + pop(asOf). The trailing comma lets callers append their own CTEs.
+const withPopulation = (asOf: Date): Prisma.Sql => Prisma.sql`
   WITH fx AS (
     SELECT DISTINCT ON (currency) currency, "rateToUSD"
-    FROM "FxRate"
-    ORDER BY currency, "asOf" DESC
+    FROM "FxRate" ORDER BY currency, "asOf" DESC
+  ),
+  pop AS (
+    SELECT e.id, e."departmentId", e."countryId", e."jobLevel",
+           s.amount * fx."rateToUSD" AS amount_usd
+    FROM "Employee" e
+    JOIN LATERAL (
+      SELECT sr.amount, sr.currency
+      FROM "SalaryRecord" sr
+      WHERE sr."employeeId" = e.id AND sr."effectiveDate" <= ${asOf}
+      ORDER BY sr."effectiveDate" DESC
+      LIMIT 1
+    ) s ON true
+    JOIN fx ON fx.currency = s.currency
+    WHERE e.status = 'ACTIVE'
   )
 `;
 
-export const getSummary = async (): Promise<DashboardSummary> => {
+export const getSummary = async (asOf?: Date): Promise<DashboardSummary> => {
+  const at = resolveAsOf(asOf);
   const [row] = await prisma.$queryRaw<[DashboardSummary]>`
-    ${FX_CTE}
+    ${withPopulation(at)}
     SELECT
-      (SELECT COUNT(*) FROM "Employee")::int                          AS "headcount",
-      COUNT(*)::int                                                   AS "activeHeadcount",
-      ROUND(SUM(sr.amount * fx."rateToUSD"))::float8                  AS "totalPayrollCostUsd",
-      ROUND(AVG(sr.amount * fx."rateToUSD"))::float8                  AS "averageSalaryUsd",
-      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
-        ORDER BY sr.amount * fx."rateToUSD"))::float8                 AS "medianSalaryUsd"
-    FROM "Employee" e
-    JOIN "SalaryRecord" sr ON sr."employeeId" = e.id AND sr."isCurrent"
-    JOIN fx ON fx.currency = sr.currency
-    WHERE e.status = 'ACTIVE'
+      (SELECT COUNT(*) FROM "Employee" WHERE "hireDate" <= ${at})::int AS "headcount",
+      (SELECT COUNT(*) FROM pop)::int                                  AS "activeHeadcount",
+      COALESCE(ROUND(SUM(amount_usd)), 0)::float8                      AS "totalPayrollCostUsd",
+      COALESCE(ROUND(AVG(amount_usd)), 0)::float8                      AS "averageSalaryUsd",
+      COALESCE(ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount_usd)), 0)::float8
+                                                                      AS "medianSalaryUsd"
+    FROM pop
   `;
   return row;
 };
@@ -48,78 +64,70 @@ export const getSummary = async (): Promise<DashboardSummary> => {
 const DIMENSION_KEYS: Record<DashboardDimension, { select: Prisma.Sql; join: Prisma.Sql }> = {
   department: {
     select: Prisma.sql`d.name`,
-    join: Prisma.sql`JOIN "Department" d ON d.id = e."departmentId"`,
+    join: Prisma.sql`JOIN "Department" d ON d.id = pop."departmentId"`,
   },
   country: {
     select: Prisma.sql`c.name`,
-    join: Prisma.sql`JOIN "Country" c ON c.id = e."countryId"`,
+    join: Prisma.sql`JOIN "Country" c ON c.id = pop."countryId"`,
   },
   jobLevel: {
-    select: Prisma.sql`e."jobLevel"`,
+    select: Prisma.sql`pop."jobLevel"`,
     join: Prisma.sql``,
   },
 };
 
 export const getSalaryByDimension = async (
-  dimension: DashboardDimension
+  dimension: DashboardDimension,
+  asOf?: Date
 ): Promise<DimensionStat[]> => {
   const { select, join } = DIMENSION_KEYS[dimension];
-
   return prisma.$queryRaw<DimensionStat[]>`
-    ${FX_CTE}
+    ${withPopulation(resolveAsOf(asOf))}
     SELECT
       ${select}                                                        AS "key",
       COUNT(*)::int                                                    AS "headcount",
-      ROUND(AVG(sr.amount * fx."rateToUSD"))::float8                   AS "averageSalaryUsd",
-      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
-        ORDER BY sr.amount * fx."rateToUSD"))::float8                  AS "medianSalaryUsd"
-    FROM "Employee" e
-    JOIN "SalaryRecord" sr ON sr."employeeId" = e.id AND sr."isCurrent"
-    JOIN fx ON fx.currency = sr.currency
+      ROUND(AVG(amount_usd))::float8                                   AS "averageSalaryUsd",
+      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount_usd))::float8 AS "medianSalaryUsd"
+    FROM pop
     ${join}
-    WHERE e.status = 'ACTIVE'
     GROUP BY ${select}
     ORDER BY "headcount" DESC
   `;
 };
 
-export const getPayBands = async (): Promise<PayBand[]> => {
+export const getPayBands = async (asOf?: Date): Promise<PayBand[]> => {
   return prisma.$queryRaw<PayBand[]>`
-    ${FX_CTE}
+    ${withPopulation(resolveAsOf(asOf))}
     SELECT
-      e."jobLevel"                                                     AS "jobLevel",
+      pop."jobLevel"                                                   AS "jobLevel",
       COUNT(*)::int                                                    AS "headcount",
-      ROUND(MIN(sr.amount * fx."rateToUSD"))::float8                   AS "minUsd",
-      ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (
-        ORDER BY sr.amount * fx."rateToUSD"))::float8                  AS "p25Usd",
-      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
-        ORDER BY sr.amount * fx."rateToUSD"))::float8                  AS "medianUsd",
-      ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (
-        ORDER BY sr.amount * fx."rateToUSD"))::float8                  AS "p75Usd",
-      ROUND(MAX(sr.amount * fx."rateToUSD"))::float8                   AS "maxUsd"
-    FROM "Employee" e
-    JOIN "SalaryRecord" sr ON sr."employeeId" = e.id AND sr."isCurrent"
-    JOIN fx ON fx.currency = sr.currency
-    WHERE e.status = 'ACTIVE'
-    GROUP BY e."jobLevel"
+      ROUND(MIN(amount_usd))::float8                                   AS "minUsd",
+      ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY amount_usd))::float8 AS "p25Usd",
+      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount_usd))::float8  AS "medianUsd",
+      ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY amount_usd))::float8 AS "p75Usd",
+      ROUND(MAX(amount_usd))::float8                                   AS "maxUsd"
+    FROM pop
+    GROUP BY pop."jobLevel"
     ORDER BY "medianUsd" DESC
   `;
 };
 
 /**
- * Monthly payroll cost over the last 12 months (docs/TRADEOFFS.md §6 — SQL,
- * not app-layer). For each month, a LATERAL as-of join picks each active
- * employee's salary in effect at that month's end (greatest effectiveDate ≤
- * month end), normalized to USD. Backed by the (employeeId, effectiveDate)
- * index so 10k × 12 lookups stay fast.
+ * Monthly payroll cost for the 12 months ending at `asOf` — each month's
+ * value is the payroll in effect at that month's end (LATERAL as-of join),
+ * normalized to USD. Backed by the (employeeId, effectiveDate) index.
  */
-export const getPayrollTrend = async (months = 12): Promise<PayrollTrendPoint[]> => {
+export const getPayrollTrend = async (asOf?: Date, months = 12): Promise<PayrollTrendPoint[]> => {
+  const at = resolveAsOf(asOf);
   return prisma.$queryRaw<PayrollTrendPoint[]>`
-    ${FX_CTE},
+    WITH fx AS (
+      SELECT DISTINCT ON (currency) currency, "rateToUSD"
+      FROM "FxRate" ORDER BY currency, "asOf" DESC
+    ),
     series AS (
       SELECT generate_series(
-        date_trunc('month', CURRENT_DATE) - make_interval(months => ${months - 1}),
-        date_trunc('month', CURRENT_DATE),
+        date_trunc('month', ${at}::date) - make_interval(months => ${months - 1}),
+        date_trunc('month', ${at}::date),
         interval '1 month'
       ) AS month
     )
@@ -142,8 +150,18 @@ export const getPayrollTrend = async (months = 12): Promise<PayrollTrendPoint[]>
   `;
 };
 
-export const getRecentChanges = async (limit: number): Promise<RecentChange[]> => {
+// Salary changes within an optional [start, end] window, newest first.
+export const getRecentChanges = async (
+  limit: number,
+  start?: Date,
+  end?: Date
+): Promise<RecentChange[]> => {
+  const effectiveDate: Prisma.DateTimeFilter = {};
+  if (start) effectiveDate.gte = start;
+  if (end) effectiveDate.lte = end;
+
   const rows = await prisma.salaryRecord.findMany({
+    where: start || end ? { effectiveDate } : undefined,
     orderBy: [{ effectiveDate: 'desc' }, { createdAt: 'desc' }],
     take: limit,
     select: {
