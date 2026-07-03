@@ -5,6 +5,7 @@
         "invalid": "This value is invalid",
         "emailRequired": "Email is required",
         "invalidEmail": "Invalid email address",
+        "departmentRequired": "Department is required",
         "unknownDepartment": "Unknown department",
         "unknownCountry": "Unknown country code",
         "unknownJobLevel": "Unknown job level",
@@ -46,6 +47,11 @@
         "usernameTooLong": "Username must be at most {{nameMax}} characters",
         "designationRequired": "Designation is required",
         "designationTooLong": "Designation must be at most {{nameMax}} characters"
+      },
+      "department": {
+        "nameRequired": "Department name is required",
+        "nameTooShort": "Department name must be at least 2 characters",
+        "nameTooLong": "Department name must be at most {{nameMax}} characters"
       }
     },
     "codes": {
@@ -60,7 +66,9 @@
       "RATE_LIMITED": "Too many attempts. Please try again later.",
       "RESET_TOKEN_INVALID": "This link is invalid or has expired. Please request a new one.",
       "IMPORT_FILE_REQUIRED": "Please attach a CSV file",
-      "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns"
+      "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns",
+      "DEPARTMENT_HAS_EMPLOYEES": "This department still has employees assigned",
+      "DEPARTMENT_NAME_TAKEN": "A department with this name already exists"
     }
   },
   "common": {
@@ -265,6 +273,31 @@
       "password": "Temporary password",
       "save": "Create user",
       "cancel": "Cancel"
+    }
+  },
+  "departments": {
+    "nav": "Departments",
+    "title": "Departments",
+    "subtitle": "Organize your workforce into departments",
+    "addDepartment": "Add department",
+    "empty": "No departments yet",
+    "count": "{{total}} departments",
+    "columns": {
+      "name": "Department",
+      "employees": "Employees"
+    },
+    "form": {
+      "name": "Department name",
+      "createTitle": "Add department",
+      "editTitle": "Rename department",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "delete": {
+      "title": "Delete department",
+      "confirm": "Delete \"{{name}}\"? This can't be undone.",
+      "action": "Delete",
+      "blocked": "Reassign its {{count}} employees before deleting."
     }
   },
   "settings": {
