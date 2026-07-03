@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { COUNTRY_CODES } from '../constants/countries';
-import { DEPARTMENTS } from '../constants/departments';
 import { EMPLOYEE_STATUSES, JOB_LEVELS } from '../constants/job-levels';
 import { VALIDATION_LIMITS } from '../constants/validation-limits';
 
@@ -27,9 +26,12 @@ export const createEmployeeSchema = z.object({
     .string({ required_error: 'errors.validation.common.emailRequired' })
     .trim()
     .email('errors.validation.common.invalidEmail'),
-  department: z.enum(DEPARTMENTS, {
-    errorMap: () => ({ message: 'errors.validation.common.unknownDepartment' }),
-  }),
+  // DB-backed reference (managed by HR) — validated as a string here, its
+  // existence is checked server-side against the departments table
+  department: z
+    .string({ required_error: 'errors.validation.common.departmentRequired' })
+    .trim()
+    .min(1, 'errors.validation.common.departmentRequired'),
   countryCode: z.enum(COUNTRY_CODES, {
     errorMap: () => ({ message: 'errors.validation.common.unknownCountry' }),
   }),
@@ -65,7 +67,7 @@ export const employeeListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(VALIDATION_LIMITS.pageSizeMax).default(20),
   search: z.string().trim().min(1).optional(),
-  department: z.enum(DEPARTMENTS).optional(),
+  department: z.string().trim().min(1).optional(),
   countryCode: z.enum(COUNTRY_CODES).optional(),
   jobLevel: z.enum(JOB_LEVELS).optional(),
   status: z.enum(EMPLOYEE_STATUSES).optional(),

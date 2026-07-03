@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  Building2,
   DollarSign,
   LayoutDashboard,
   LogOut,
@@ -17,6 +18,7 @@ const navItems = [
   { to: '/', labelKey: 'dashboard.title', icon: LayoutDashboard, end: true },
   { to: '/employees', labelKey: 'employee.nav', icon: Users, end: false },
   { to: '/salaries', labelKey: 'salaries.nav', icon: DollarSign, end: false },
+  { to: '/departments', labelKey: 'departments.nav', icon: Building2, end: false },
   { to: '/import', labelKey: 'import.title', icon: Upload, end: false },
   { to: '/users', labelKey: 'users.nav', icon: UserCog, end: false },
   { to: '/settings', labelKey: 'settings.nav', icon: Settings, end: false },

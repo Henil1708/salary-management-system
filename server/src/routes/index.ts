@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import authRoutes from '@routes/auth.routes';
 import dashboardRoutes from '@routes/dashboard.routes';
+import departmentRoutes from '@routes/department.routes';
 import employeeRoutes from '@routes/employee.routes';
 import exportRoutes from '@routes/export.routes';
 import importRoutes from '@routes/import.routes';
@@ -20,6 +21,7 @@ router.get('/health', (_req, res) => {
 
 router.use('/auth', authRoutes);
 router.use('/employees', employeeRoutes);
+router.use('/departments', departmentRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/import', importRoutes);
 router.use('/export', exportRoutes);

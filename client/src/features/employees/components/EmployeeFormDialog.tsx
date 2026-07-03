@@ -1,16 +1,17 @@
+import { useEffect } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   COUNTRIES,
   CreateEmployeeInput,
-  DEPARTMENTS,
   EMPLOYEE_STATUSES,
   EmployeeDto,
   JOB_LEVELS,
   createEmployeeSchema,
 } from '@salary/shared';
-import { useAppDispatch } from '@/app/store/types';
+import { useAppDispatch, useAppSelector } from '@/app/store/types';
+import { fetchDepartments, getDepartmentNames } from '@/features/departments';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -52,7 +53,16 @@ const toInitialValues = (employee?: EmployeeDto): CreateEmployeeInput =>
 export const EmployeeFormDialog = ({ open, onOpenChange, employee }: EmployeeFormDialogProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const departmentNames = useAppSelector(getDepartmentNames);
   const isEdit = Boolean(employee);
+
+  // dynamic (DB-backed) department options for the picker
+  useEffect(() => {
+    if (open && departmentNames.length === 0) {
+      void dispatch(fetchDepartments());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const handleSubmit = async (
     values: CreateEmployeeInput,
@@ -98,7 +108,7 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee }: EmployeeFor
                 <SelectField
                   name="department"
                   label={t('employee.form.department')}
-                  options={DEPARTMENTS}
+                  options={departmentNames}
                 />
                 <SelectField name="countryCode" label={t('employee.form.country')} options={COUNTRY_CODES} />
                 <SelectField name="jobLevel" label={t('employee.form.jobLevel')} options={JOB_LEVELS} />
