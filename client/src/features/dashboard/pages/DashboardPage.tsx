@@ -8,10 +8,13 @@ import { formatCurrency, formatNumber } from '@/shared/utils/format';
 import {
   fetchDashboard,
   getDimensionStats,
+  getPayrollTrend,
   getRecentChanges,
   getSummary,
 } from '@/features/dashboard';
+import { ChartCardSkeleton, StatCardSkeleton } from '@/shared/components/feedback/skeletons';
 import { DepartmentDonut } from '../components/DepartmentDonut';
+import { PayrollTrendChart } from '../components/PayrollTrendChart';
 import { PayrollByCountry } from '../components/PayrollByCountry';
 import { RecentChangesList } from '../components/RecentChangesList';
 import { SalaryByDimensionChart } from '../components/SalaryByDimensionChart';
@@ -24,6 +27,7 @@ const DashboardPage = () => {
   const summary = useAppSelector(getSummary);
   const departmentStats = useAppSelector(getDimensionStats('department'));
   const countryStats = useAppSelector(getDimensionStats('country'));
+  const payrollTrend = useAppSelector(getPayrollTrend);
   const recentChanges = useAppSelector(getRecentChanges);
 
   useEffect(() => {
@@ -40,58 +44,68 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={<Users />}
-          iconClassName="bg-indigo-100 text-indigo-600"
-          title={t('dashboard.cards.totalEmployees')}
-          value={summary ? formatNumber(summary.headcount) : '—'}
-          caption={
-            summary
-              ? t('dashboard.cards.activeCaption', { count: summary.activeHeadcount })
-              : undefined
-          }
-        />
-        <StatCard
-          icon={<Wallet />}
-          iconClassName="bg-emerald-100 text-emerald-600"
-          title={t('dashboard.cards.averageSalary')}
-          value={summary ? formatCurrency(summary.averageSalaryUsd) : '—'}
-          caption={
-            summary
-              ? t('dashboard.cards.medianCaption', {
-                  value: formatCurrency(summary.medianSalaryUsd),
-                })
-              : undefined
-          }
-        />
-        <StatCard
-          icon={<DollarSign />}
-          iconClassName="bg-sky-100 text-sky-600"
-          title={t('dashboard.cards.totalPayroll')}
-          value={
-            summary ? formatCurrency(summary.totalPayrollCostUsd, 'USD', { compact: true }) : '—'
-          }
-          caption={summary ? t('dashboard.cards.normalizedCaption') : undefined}
-        />
-        <StatCard
-          icon={<Globe />}
-          iconClassName="bg-amber-100 text-amber-600"
-          title={t('dashboard.cards.countries')}
-          value={formatNumber(COUNTRIES.length)}
-          caption={t('dashboard.cards.currenciesCaption', { count: CURRENCY_CODES.length })}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SalaryByDimensionChart />
-        {departmentStats && summary && (
-          <DepartmentDonut rows={departmentStats} totalHeadcount={summary.activeHeadcount} />
+        {!summary ? (
+          Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+        ) : (
+          <>
+            <StatCard
+              icon={<Users />}
+              iconClassName="bg-indigo-100 text-indigo-600"
+              title={t('dashboard.cards.totalEmployees')}
+              value={formatNumber(summary.headcount)}
+              caption={t('dashboard.cards.activeCaption', { count: summary.activeHeadcount })}
+            />
+            <StatCard
+              icon={<Wallet />}
+              iconClassName="bg-emerald-100 text-emerald-600"
+              title={t('dashboard.cards.averageSalary')}
+              value={formatCurrency(summary.averageSalaryUsd)}
+              caption={t('dashboard.cards.medianCaption', {
+                value: formatCurrency(summary.medianSalaryUsd),
+              })}
+            />
+            <StatCard
+              icon={<DollarSign />}
+              iconClassName="bg-sky-100 text-sky-600"
+              title={t('dashboard.cards.totalPayroll')}
+              value={formatCurrency(summary.totalPayrollCostUsd, 'USD', { compact: true })}
+              caption={t('dashboard.cards.normalizedCaption')}
+            />
+            <StatCard
+              icon={<Globe />}
+              iconClassName="bg-amber-100 text-amber-600"
+              title={t('dashboard.cards.countries')}
+              value={formatNumber(COUNTRIES.length)}
+              caption={t('dashboard.cards.currenciesCaption', { count: CURRENCY_CODES.length })}
+            />
+          </>
         )}
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          {payrollTrend.length > 0 ? (
+            <PayrollTrendChart data={payrollTrend} />
+          ) : (
+            <ChartCardSkeleton />
+          )}
+        </div>
+        {departmentStats && summary ? (
+          <DepartmentDonut rows={departmentStats} totalHeadcount={summary.activeHeadcount} />
+        ) : (
+          <ChartCardSkeleton height={320} />
+        )}
+      </div>
+
+      <SalaryByDimensionChart />
+
       <div className="grid gap-4 lg:grid-cols-2">
-        {countryStats && <PayrollByCountry rows={countryStats} />}
-        {recentChanges.length > 0 && <RecentChangesList rows={recentChanges} />}
+        {countryStats ? <PayrollByCountry rows={countryStats} /> : <ChartCardSkeleton />}
+        {recentChanges.length > 0 ? (
+          <RecentChangesList rows={recentChanges} />
+        ) : (
+          <ChartCardSkeleton />
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,10 @@
-import { ForgotPasswordInput, LoginInput, ResetPasswordInput } from '@salary/shared';
+import {
+  ChangePasswordInput,
+  ForgotPasswordInput,
+  LoginInput,
+  ResetPasswordInput,
+  UpdateProfileInput,
+} from '@salary/shared';
 import { AppThunk } from '@/app/store/types';
 import { ApiCodeError } from '@/shared/services/api-client';
 import { tokenStorage } from '@/shared/services/token-storage';
@@ -8,6 +14,7 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGOUT,
+  PROFILE_UPDATED,
   SESSION_RESTORE_FAILURE,
   SESSION_RESTORE_REQUEST,
   SESSION_RESTORE_SUCCESS,
@@ -58,6 +65,24 @@ export const logout = (): AppThunk => (dispatch) => {
   tokenStorage.clear();
   dispatch({ type: LOGOUT });
 };
+
+// Rethrows so the Settings forms surface ApiFieldError inline.
+export const updateProfile =
+  (input: UpdateProfileInput): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    const user = await AuthService.updateProfile(input);
+    dispatch({ type: PROFILE_UPDATED, payload: user });
+  };
+
+// Changing the password bumps tokenVersion (killing other sessions); the
+// server returns a fresh pair so THIS session survives — persist it, keeping
+// the current storage choice (remember-me).
+export const changePassword =
+  (input: ChangePasswordInput): AppThunk<Promise<void>> =>
+  async () => {
+    const { accessToken, refreshToken } = await AuthService.changePassword(input);
+    tokenStorage.setTokens(accessToken, refreshToken);
+  };
 
 // No reducer state — the forms own their submission lifecycle; these exist so
 // components still dispatch thunks instead of calling services (rule 8/9)

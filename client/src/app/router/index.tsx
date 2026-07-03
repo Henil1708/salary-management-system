@@ -14,6 +14,9 @@ const EmployeeDirectoryPage = lazy(
   () => import('@/features/employees/pages/EmployeeDirectoryPage')
 );
 const EmployeeProfilePage = lazy(() => import('@/features/employees/pages/EmployeeProfilePage'));
+const SalariesPage = lazy(() => import('@/features/salaries/pages/SalariesPage'));
+const UsersPage = lazy(() => import('@/features/users/pages/UsersPage'));
+const SettingsPage = lazy(() => import('@/features/settings/pages/SettingsPage'));
 
 const withSuspense = (node: React.ReactNode) => (
   <Suspense
@@ -48,6 +51,9 @@ const router = createBrowserRouter([
           { path: '/', element: withSuspense(<DashboardPage />) },
           { path: '/employees', element: withSuspense(<EmployeeDirectoryPage />) },
           { path: '/employees/:id', element: withSuspense(<EmployeeProfilePage />) },
+          { path: '/salaries', element: withSuspense(<SalariesPage />) },
+          { path: '/users', element: withSuspense(<UsersPage />) },
+          { path: '/settings', element: withSuspense(<SettingsPage />) },
           // /import registers here as the feature lands
         ],
       },

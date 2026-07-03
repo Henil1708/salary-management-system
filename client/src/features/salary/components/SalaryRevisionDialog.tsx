@@ -1,5 +1,6 @@
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { CreateSalaryRecordInput, CURRENCY_CODES, createSalaryRecordSchema } from '@salary/shared';
 import { useAppDispatch } from '@/app/store/types';
 import { Button } from '@/shared/components/ui/button';
@@ -45,6 +46,7 @@ export const SalaryRevisionDialog = ({
   ) => {
     try {
       await dispatch(addSalaryRevision(employeeId, values));
+      toast.success(t('common.toast.salaryAdded'));
       onOpenChange(false);
     } catch (error) {
       if (error instanceof ApiFieldError) {

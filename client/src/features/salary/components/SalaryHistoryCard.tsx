@@ -4,9 +4,11 @@ import { Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/app/store/types';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { TableSkeleton } from '@/shared/components/feedback/skeletons';
 import {
   clearSalaryHistory,
   fetchSalaryHistory,
+  getSalaryLoading,
   getSalaryRecords,
 } from '@/features/salary';
 import { SalaryHistoryTable } from './SalaryHistoryTable';
@@ -24,6 +26,7 @@ export const SalaryHistoryCard = ({ employeeId, defaultCurrency }: SalaryHistory
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const records = useAppSelector(getSalaryRecords);
+  const loading = useAppSelector(getSalaryLoading);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -43,7 +46,11 @@ export const SalaryHistoryCard = ({ employeeId, defaultCurrency }: SalaryHistory
         </Button>
       </CardHeader>
       <CardContent>
-        <SalaryHistoryTable records={records} />
+        {loading && records.length === 0 ? (
+          <TableSkeleton rows={3} columns={3} />
+        ) : (
+          <SalaryHistoryTable records={records} />
+        )}
       </CardContent>
       <SalaryRevisionDialog
         open={dialogOpen}

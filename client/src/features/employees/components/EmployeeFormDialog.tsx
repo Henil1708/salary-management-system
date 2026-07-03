@@ -1,5 +1,6 @@
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import {
   COUNTRIES,
   CreateEmployeeInput,
@@ -60,8 +61,10 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee }: EmployeeFor
     try {
       if (isEdit && employee) {
         await dispatch(updateEmployee(employee.id, values));
+        toast.success(t('common.toast.employeeUpdated'));
       } else {
         await dispatch(createEmployee(values));
+        toast.success(t('common.toast.employeeCreated'));
       }
       onOpenChange(false);
     } catch (error) {

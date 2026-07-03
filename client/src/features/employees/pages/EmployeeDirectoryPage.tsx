@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/app/store/types';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { TableSkeleton } from '@/shared/components/feedback/skeletons';
 import { formatNumber } from '@/shared/utils/format';
 import {
   fetchEmployees,
@@ -47,7 +48,9 @@ const EmployeeDirectoryPage = () => {
 
       <Card>
         <CardContent className="p-0">
-          {!loading && employees.length === 0 ? (
+          {loading && employees.length === 0 ? (
+            <TableSkeleton rows={10} columns={8} />
+          ) : employees.length === 0 ? (
             <p className="py-16 text-center text-sm text-muted-foreground">
               {t('employee.directory.empty')}
             </p>

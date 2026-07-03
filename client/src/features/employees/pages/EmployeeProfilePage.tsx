@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from '@/app/store/types';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Skeleton } from '@/shared/components/ui/skeleton';
+import { TableSkeleton } from '@/shared/components/feedback/skeletons';
 import { formatDate } from '@/shared/utils/format';
 import { fetchEmployee, getCurrentEmployee, getDetailLoading } from '@/features/employees';
 import { SalaryHistoryCard } from '@/features/salary/components/SalaryHistoryCard';
@@ -25,10 +27,36 @@ const EmployeeProfilePage = () => {
     }
   }, [dispatch, id]);
 
-  if (loading || !employee) {
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-4 w-32" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10" />
+            ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+          </CardHeader>
+          <CardContent>
+            <TableSkeleton rows={4} columns={3} />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!employee) {
     return (
       <p className="py-16 text-center text-sm text-muted-foreground">
-        {loading ? t('common.loading') : t('employee.profile.notFound')}
+        {t('employee.profile.notFound')}
       </p>
     );
   }
