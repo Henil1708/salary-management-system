@@ -39,6 +39,7 @@ export const SalaryHistoryTable = ({ records }: SalaryHistoryTableProps) => {
             </TableCell>
             <TableCell className="text-right font-medium tabular-nums">
               {formatCurrency(record.amount, record.currency)}
+              {t('common.perMonth')}
             </TableCell>
             <TableCell className="text-muted-foreground">{record.reason}</TableCell>
           </TableRow>

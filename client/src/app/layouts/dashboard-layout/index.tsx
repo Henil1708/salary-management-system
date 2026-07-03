@@ -7,7 +7,7 @@ import { cn } from '@/shared/utils/cn';
 
 const navItems = [
   { to: '/', labelKey: 'dashboard.title', icon: LayoutDashboard, end: true },
-  { to: '/employees', labelKey: 'employee.directory.title', icon: Users, end: false },
+  { to: '/employees', labelKey: 'employee.nav', icon: Users, end: false },
   { to: '/import', labelKey: 'import.title', icon: Upload, end: false },
 ];
 

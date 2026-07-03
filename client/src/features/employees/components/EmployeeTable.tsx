@@ -100,7 +100,7 @@ export const EmployeeTable = () => {
             </TableCell>
             <TableCell className="text-right tabular-nums">
               {employee.currentSalary
-                ? formatCurrency(employee.currentSalary.amount, employee.currentSalary.currency)
+                ? `${formatCurrency(employee.currentSalary.amount, employee.currentSalary.currency)}${t('common.perMonth')}`
                 : '—'}
             </TableCell>
           </TableRow>

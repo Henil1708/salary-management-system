@@ -64,6 +64,7 @@
     "edit": "Edit",
     "search": "Search",
     "export": "Export CSV",
+    "perMonth": "/mo",
     "noResults": "No results found",
     "errors": {
       "generic": "Something went wrong. Please try again."
@@ -97,6 +98,7 @@
     "backToLogin": "Back to sign in"
   },
   "employee": {
+    "nav": "Employees",
     "directory": {
       "title": "Employee Directory",
       "subtitle": "{{total}} employees",
@@ -118,7 +120,7 @@
         "country": "Country",
         "jobLevel": "Level",
         "status": "Status",
-        "currentSalary": "Current salary"
+        "currentSalary": "Monthly salary"
       },
       "pagination": {
         "range": "{{from}}–{{to}} of {{total}}",
@@ -176,9 +178,9 @@
     "cards": {
       "totalEmployees": "Total Employees",
       "activeCaption": "{{count}} active",
-      "averageSalary": "Average Salary",
+      "averageSalary": "Avg. Monthly Salary",
       "medianCaption": "Median {{value}}",
-      "totalPayroll": "Total Payroll",
+      "totalPayroll": "Monthly Payroll",
       "normalizedCaption": "Normalized to USD",
       "countries": "Countries",
       "currenciesCaption": "{{count}} currencies"

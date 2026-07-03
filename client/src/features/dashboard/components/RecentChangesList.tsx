@@ -36,6 +36,7 @@ export const RecentChangesList = ({ rows }: RecentChangesListProps) => {
             <div className="text-right">
               <div className="text-sm font-semibold tabular-nums">
                 {formatCurrency(change.amount, change.currency)}
+                {t('common.perMonth')}
               </div>
               <div className="text-xs text-muted-foreground">
                 {formatDate(change.effectiveDate)}
