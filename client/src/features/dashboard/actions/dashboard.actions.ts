@@ -1,6 +1,7 @@
 import { DashboardDimension } from '@salary/shared';
 import { AppThunk } from '@/app/store/types';
 import { ApiCodeError } from '@/shared/services/api-client';
+import { DateRange } from '../services/dashboard.service';
 import { DashboardService } from '../services/dashboard.service';
 import {
   FETCH_DIMENSION_FAILURE,
@@ -15,15 +16,17 @@ import {
   FETCH_TREND_FAILURE,
   FETCH_TREND_REQUEST,
   FETCH_TREND_SUCCESS,
+  SET_RANGE,
 } from './dashboard.actionTypes';
 
 const toErrorCode = (error: unknown): string =>
   error instanceof ApiCodeError ? error.code : 'INTERNAL';
 
-export const fetchSummary = (): AppThunk<Promise<void>> => async (dispatch) => {
+export const fetchSummary = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   dispatch({ type: FETCH_SUMMARY_REQUEST });
   try {
-    dispatch({ type: FETCH_SUMMARY_SUCCESS, payload: await DashboardService.summary() });
+    const payload = await DashboardService.summary(getState().dashboard.range);
+    dispatch({ type: FETCH_SUMMARY_SUCCESS, payload });
   } catch (error) {
     dispatch({ type: FETCH_SUMMARY_FAILURE, payload: { errorCode: toErrorCode(error) } });
   }
@@ -32,16 +35,10 @@ export const fetchSummary = (): AppThunk<Promise<void>> => async (dispatch) => {
 export const fetchDimension =
   (dimension: DashboardDimension): AppThunk<Promise<void>> =>
   async (dispatch, getState) => {
-    // aggregates change rarely — don't refetch a dimension already loaded
-    if (getState().dashboard.byDimension[dimension]) {
-      return;
-    }
     dispatch({ type: FETCH_DIMENSION_REQUEST, payload: { dimension } });
     try {
-      dispatch({
-        type: FETCH_DIMENSION_SUCCESS,
-        payload: { dimension, rows: await DashboardService.salaryByDimension(dimension) },
-      });
+      const rows = await DashboardService.salaryByDimension(dimension, getState().dashboard.range);
+      dispatch({ type: FETCH_DIMENSION_SUCCESS, payload: { dimension, rows } });
     } catch (error) {
       dispatch({ type: FETCH_DIMENSION_FAILURE, payload: { errorCode: toErrorCode(error) } });
     }
@@ -49,25 +46,27 @@ export const fetchDimension =
 
 export const fetchRecentChanges =
   (limit = 6): AppThunk<Promise<void>> =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     dispatch({ type: FETCH_RECENT_REQUEST });
     try {
-      dispatch({ type: FETCH_RECENT_SUCCESS, payload: await DashboardService.recentChanges(limit) });
+      const payload = await DashboardService.recentChanges(limit, getState().dashboard.range);
+      dispatch({ type: FETCH_RECENT_SUCCESS, payload });
     } catch (error) {
       dispatch({ type: FETCH_RECENT_FAILURE, payload: { errorCode: toErrorCode(error) } });
     }
   };
 
-export const fetchPayrollTrend = (): AppThunk<Promise<void>> => async (dispatch) => {
+export const fetchPayrollTrend = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   dispatch({ type: FETCH_TREND_REQUEST });
   try {
-    dispatch({ type: FETCH_TREND_SUCCESS, payload: await DashboardService.payrollTrend() });
+    const payload = await DashboardService.payrollTrend(getState().dashboard.range);
+    dispatch({ type: FETCH_TREND_SUCCESS, payload });
   } catch (error) {
     dispatch({ type: FETCH_TREND_FAILURE, payload: { errorCode: toErrorCode(error) } });
   }
 };
 
-/** Everything the dashboard page needs, fired in parallel. */
+/** Everything the dashboard page needs, fired in parallel (using the current range). */
 export const fetchDashboard = (): AppThunk => (dispatch) => {
   void dispatch(fetchSummary());
   void dispatch(fetchPayrollTrend());
@@ -75,3 +74,11 @@ export const fetchDashboard = (): AppThunk => (dispatch) => {
   void dispatch(fetchDimension('country'));
   void dispatch(fetchRecentChanges());
 };
+
+// Changing the range re-fetches the whole dashboard "as of" the new window.
+export const setDashboardRange =
+  (range: DateRange): AppThunk =>
+  (dispatch) => {
+    dispatch({ type: SET_RANGE, payload: range });
+    dispatch(fetchDashboard());
+  };
