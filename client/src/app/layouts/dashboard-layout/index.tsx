@@ -6,9 +6,9 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
-  Upload,
   UserCog,
   Users,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { Button } from '@/shared/components/ui/button';
@@ -18,8 +18,8 @@ const navItems = [
   { to: '/', labelKey: 'dashboard.title', icon: LayoutDashboard, end: true },
   { to: '/employees', labelKey: 'employee.nav', icon: Users, end: false },
   { to: '/salaries', labelKey: 'salaries.nav', icon: DollarSign, end: false },
+  { to: '/payroll', labelKey: 'payroll.nav', icon: Wallet, end: false },
   { to: '/departments', labelKey: 'departments.nav', icon: Building2, end: false },
-  { to: '/import', labelKey: 'import.title', icon: Upload, end: false },
   { to: '/users', labelKey: 'users.nav', icon: UserCog, end: false },
   { to: '/settings', labelKey: 'settings.nav', icon: Settings, end: false },
 ];

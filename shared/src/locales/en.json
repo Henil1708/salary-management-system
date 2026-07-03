@@ -52,6 +52,10 @@
         "nameRequired": "Department name is required",
         "nameTooShort": "Department name must be at least 2 characters",
         "nameTooLong": "Department name must be at most {{nameMax}} characters"
+      },
+      "payroll": {
+        "periodRequired": "Pay period is required",
+        "periodInvalid": "Pay period must be a month (YYYY-MM)"
       }
     },
     "codes": {
@@ -68,7 +72,9 @@
       "IMPORT_FILE_REQUIRED": "Please attach a CSV file",
       "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns",
       "DEPARTMENT_HAS_EMPLOYEES": "This department still has employees assigned",
-      "DEPARTMENT_NAME_TAKEN": "A department with this name already exists"
+      "DEPARTMENT_NAME_TAKEN": "A department with this name already exists",
+      "PAYROLL_PERIOD_EXISTS": "A payroll run already exists for this month",
+      "PAYROLL_RUN_NOT_FOUND": "Payroll run not found"
     }
   },
   "common": {
@@ -272,6 +278,52 @@
       "designation": "Designation",
       "password": "Temporary password",
       "save": "Create user",
+      "cancel": "Cancel"
+    }
+  },
+  "payroll": {
+    "nav": "Payroll",
+    "title": "Payroll",
+    "subtitle": "Run payroll and track what's been paid",
+    "runPayroll": "Run payroll",
+    "runsTitle": "Payroll runs",
+    "empty": "No payroll runs yet",
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "PAID": "Paid"
+    },
+    "columns": {
+      "period": "Pay period",
+      "employees": "Employees",
+      "total": "Total",
+      "paid": "Paid",
+      "status": "Status"
+    },
+    "run": {
+      "back": "Back to payroll",
+      "title": "Payroll — {{period}}",
+      "summary": "{{paid}} of {{total}} paid",
+      "payAll": "Mark all paid",
+      "payFiltered": "Mark filtered as paid",
+      "markPaid": "Mark paid",
+      "markPending": "Mark pending",
+      "itemEmployee": "Employee",
+      "itemAmount": "Amount",
+      "itemStatus": "Status",
+      "filters": {
+        "search": "Search by name or ID",
+        "department": "Department",
+        "all": "All",
+        "minUsd": "Min (USD)",
+        "maxUsd": "Max (USD)"
+      }
+    },
+    "generate": {
+      "title": "Run payroll",
+      "period": "Pay period",
+      "hint": "Creates a line for every active employee at their current salary.",
+      "submit": "Create run",
       "cancel": "Cancel"
     }
   },

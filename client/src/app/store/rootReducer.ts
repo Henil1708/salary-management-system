@@ -5,6 +5,7 @@ import { departmentsReducer } from '@/features/departments';
 import { employeesReducer } from '@/features/employees';
 import { salaryReducer } from '@/features/salary';
 import { salariesReducer } from '@/features/salaries';
+import { payrollReducer } from '@/features/payroll';
 import { usersReducer } from '@/features/users';
 
 export const rootReducer = combineReducers({
@@ -14,5 +15,6 @@ export const rootReducer = combineReducers({
   employees: employeesReducer,
   salary: salaryReducer,
   salaries: salariesReducer,
+  payroll: payrollReducer,
   users: usersReducer,
 });

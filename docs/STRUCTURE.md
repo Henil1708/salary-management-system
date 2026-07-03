@@ -63,7 +63,7 @@ server/
 ├── prisma/
 │   ├── schema.prisma      # full data model (TRADEOFFS §1); no datasource URL here
 │   ├── migrations/
-│   └── seed.ts            # (upcoming) deterministic 10k-employee seed
+│   └── seed.ts            # deterministic 10k-employee seed (faker.seed(42)) + reference data + HR user
 ├── .env / .env.example    # env vars validated at boot by src/config/env.ts
 └── src/
     ├── server.ts          # entry: env → DB connect → listen → graceful shutdown
@@ -78,9 +78,12 @@ server/
     │   ├── validate.ts    # validateRequest({body,query,params}) w/ shared schemas
     │   ├── errorHandler.ts# the ONLY producer of fail/error envelopes + 404 handler
     │   └── rateLimiter.ts # login + forgot-password limiters
-    ├── routes/            # one router per feature, mounted in routes/index.ts
-    ├── controllers/       # (upcoming) thin handlers: call service → sendSuccess
-    ├── services/          # (upcoming) business logic, no req/res
+    ├── routes/            # one router per feature, mounted in routes/index.ts: auth, employee
+    │                      #   (+ nested salary-records), department, dashboard, payroll, import,
+    │                      #   export, user
+    ├── controllers/       # thin handlers: call service → sendSuccess; errors via next()
+    ├── services/          # business logic, no req/res: auth, employee, salary-record, department,
+    │                      #   dashboard, csv-import, export, payroll, user, fx-rate
     ├── utils/
     │   ├── errors.ts      # AppError hierarchy; code doubles as errors.codes.* key
     │   ├── jwt.ts         # sign access/refresh (separate secrets) + reset-token hash
@@ -109,10 +112,19 @@ client/
     │   ├── store/         # store.ts (legacy_createStore + thunk), rootReducer, types (RootState/AppDispatch/AppThunk + typed hooks)
     │   ├── router/        # createBrowserRouter; private-routes (auth guard, 'restoring' spinner), public-routes (login bounce)
     │   ├── layouts/       # dashboard-layout (sidebar/header/user), auth-layout (centered card)
-    │   └── providers/     # redux → theme → i18n (i18next initialized from @salary/shared enLocale)
-    ├── features/          # one folder per domain: auth, employees, salary, dashboard, import-export
-    │   └── <feature>/     # actions/ (actionTypes + thunks), reducers/, selectors/, services/,
-    │                      #   pages/, components/, hooks/, index.ts (public surface)
+    │   └── providers/     # redux → theme → i18n (i18next from @salary/shared enLocale) → sonner Toaster
+    ├── features/          # one folder per domain (each: actions/ [actionTypes + thunks],
+    │   │                  #   reducers/, selectors/, services/, pages/, components/, index.ts):
+    │   ├── auth/          #   login, forgot/reset, session restore, profile update + change password
+    │   ├── dashboard/     #   stat tiles, payroll-trend area chart, dimension charts, recent changes
+    │   ├── employees/     #   directory (paginated/filtered/sorted) + profile + create/edit dialog
+    │   ├── salary/        #   salary history + revision dialog (embedded in the employee profile)
+    │   ├── salaries/      #   org-wide "all salaries" page + add-salary (with employee search)
+    │   ├── payroll/       #   payroll runs list + run detail (item filters, per-row & filtered pay)
+    │   ├── departments/   #   department CRUD (delete blocked while employees assigned)
+    │   ├── users/         #   HR user management (list + add teammate)
+    │   └── settings/      #   own-profile + change-password forms
+    │   # (import/export CSV UI to follow; server endpoints already exist)
     ├── shared/
     │   ├── components/ui/ # shadcn-generated primitives (eslint-ignored)
     │   ├── services/      # api-client (JSend unwrapping, ApiFieldError/ApiCodeError, silent single-flight refresh), token-storage (localStorage)

@@ -18,6 +18,7 @@ export * from './schemas/salary-record.schema';
 export * from './schemas/csv-import.schema';
 export * from './schemas/dashboard.schema';
 export * from './schemas/import.schema';
+export * from './schemas/payroll.schema';
 
 // i18n resource — only English in v1; adding a locale later is a new file
 // here plus registration on the client, nothing else (docs/TRADEOFFS.md §5)
