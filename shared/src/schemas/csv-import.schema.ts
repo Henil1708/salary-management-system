@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { COUNTRY_CODES, CURRENCY_CODES } from '../constants/countries';
-import { DEPARTMENTS } from '../constants/departments';
 import { EMPLOYEE_STATUSES, JOB_LEVELS } from '../constants/job-levels';
 import { VALIDATION_LIMITS } from '../constants/validation-limits';
 
@@ -60,11 +59,14 @@ export const csvRowSchema = z.object({
       .trim()
       .email('errors.validation.common.invalidEmail')
   ),
+  // DB-backed reference — validated as a required string here; the import
+  // rejects rows whose department doesn't exist (checked against the DB)
   department: z.preprocess(
     emptyToUndefined,
-    z.enum(DEPARTMENTS, {
-      errorMap: () => ({ message: 'errors.validation.common.unknownDepartment' }),
-    })
+    z
+      .string({ required_error: 'errors.validation.common.departmentRequired' })
+      .trim()
+      .min(1, 'errors.validation.common.departmentRequired')
   ),
   countryCode: z.preprocess(
     emptyToUndefined,

@@ -210,3 +210,19 @@ A shared Express error-handling middleware and a shared Zod-validation middlewar
 ## 9. AI Tool Usage
 
 Per the assessment's ask to show *how* AI tools were used, not just that they were: prompts and instructions used with AI coding tools during this build are logged as the project progresses (a running `docs/AI_USAGE.md` — added once implementation starts) rather than reconstructed after the fact, so it reflects the actual process.
+
+---
+
+## 10. Payroll Runs (scope extension — payment tracking, not disbursement)
+
+Added after the original scope: a **Payroll** feature that lets HR run payroll for a month and track what's been paid. This deliberately stays on the record-keeping side of the line the PRD draws — it **tracks payment status**, it does not move money, compute tax, or talk to a bank. That boundary is what keeps it consistent with "a salary record-keeping tool, not a payroll processor."
+
+- **Salaries are monthly.** The seed and all displays treat a salary as a *monthly* amount (a monthly payroll run), which is what makes "run payroll for July" and a per-month total meaningful. This was a change from the initial annual framing.
+- **A run snapshots, it doesn't reference.** Generating a run for a period writes one `PayrollItem` per **active** employee, copying that employee's current salary (local `amount` + `currency`) and its USD-normalized `amountUsd` **at generation time**. A later raise must never retroactively change a historical run, so the amount is copied, not looked up live. `employeeId` is kept for display joins (name/department shown as-is), but the money is frozen on the item.
+- **`period` is unique.** One run per month — a second `POST` for the same period is a `409 PAYROLL_PERIOD_EXISTS`, so you can't accidentally double-generate.
+- **Status is derived, not hand-set.** A run is `PENDING` (nothing paid), `PROCESSING` (some paid), or `PAID` (all paid); it's recomputed from item counts after every pay action rather than toggled independently, so the badge can't drift from reality.
+- **"Mark all paid" respects the active filter.** The run detail filters items by name/ID, department, and USD range; the *same* `where` builder drives both the item list and the pay-all `updateMany`, so paying "all" pays exactly the filtered subset (e.g. one department), never the whole run. The run's headline counts/total stay full-run regardless of the filter — the filter scopes the working set, not the summary.
+- **Scale.** A run is ~9,500 items (one per active employee); items are inserted with batched `createMany`, the detail list is server-side paginated, and pay-all is a single `updateMany` — no per-row round trips.
+- **Currency.** Line items keep the employee's local currency for display but carry a snapshotted USD amount for the run total and the salary-range filter, since a run mixes currencies and only a common unit is comparable.
+
+**Salary management vs. payroll are kept as two things.** The *Salaries* tab is compensation record-keeping (what each person is paid + revision history); *Payroll* is "did we run and pay this month." They intentionally coexist rather than one replacing the other.

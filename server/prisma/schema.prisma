@@ -100,6 +100,7 @@ model Employee {
   department    Department     @relation(fields: [departmentId], references: [id])
   country       Country        @relation(fields: [countryId], references: [id])
   salaryRecords SalaryRecord[]
+  payrollItems  PayrollItem[]
 
   @@index([departmentId])
   @@index([countryId])
@@ -124,4 +125,39 @@ model SalaryRecord {
 
   @@index([employeeId, isCurrent])
   @@index([createdAt])
+  // Backs the dashboard payroll-trend as-of join (latest salary ≤ month end)
+  @@index([employeeId, effectiveDate])
+}
+
+// ================================
+// Payroll (payment tracking, not disbursement — PRD keeps execution out of
+// scope; this records that a period's salaries were run and marked paid)
+// ================================
+
+model PayrollRun {
+  id        String   @id @default(uuid())
+  period    String   @unique // "YYYY-MM"
+  status    String   @default("PENDING") // PENDING | PROCESSING | PAID
+  createdAt DateTime @default(now())
+
+  items PayrollItem[]
+}
+
+// One line per active employee, snapshotting their salary at run time so a
+// later raise never alters a past run.
+model PayrollItem {
+  id           String    @id @default(uuid())
+  payrollRunId String
+  employeeId   String
+  amount       Decimal   @db.Decimal(14, 2)
+  currency     String
+  amountUsd    Decimal   @db.Decimal(14, 2)
+  status       String    @default("PENDING") // PENDING | PAID
+  paidAt       DateTime?
+
+  run      PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employee Employee   @relation(fields: [employeeId], references: [id])
+
+  @@index([payrollRunId])
+  @@index([payrollRunId, status])
 }

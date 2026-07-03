@@ -81,22 +81,40 @@ const parseAndValidate = async (fileBuffer: Buffer): Promise<ParsedFile> => {
  * and corrections are the normal case, not an error (docs/TRADEOFFS.md §3).
  * Earlier occurrences land in the report flagged as superseded.
  */
-const dedupeKeepLast = (rows: ValidRow[], rejected: RejectedRow[]): CsvRowInput[] => {
+const dedupeKeepLast = (rows: ValidRow[], rejected: RejectedRow[]): ValidRow[] => {
   const lastIndexByEmail = new Map<string, number>();
   rows.forEach((row, index) => lastIndexByEmail.set(row.data.email.toLowerCase(), index));
 
-  return rows
-    .filter((row, index) => {
-      if (lastIndexByEmail.get(row.data.email.toLowerCase()) === index) {
-        return true;
-      }
-      rejected.push({
-        raw: row.raw,
-        reasonKeys: ['errors.validation.common.supersededInFile'],
-      });
-      return false;
-    })
-    .map((row) => row.data);
+  return rows.filter((row, index) => {
+    if (lastIndexByEmail.get(row.data.email.toLowerCase()) === index) {
+      return true;
+    }
+    rejected.push({
+      raw: row.raw,
+      reasonKeys: ['errors.validation.common.supersededInFile'],
+    });
+    return false;
+  });
+};
+
+/**
+ * Department is a DB-backed reference (no static enum), so a row's department
+ * existence can only be checked against the database — rows naming an unknown
+ * department are rejected here, the same as any other bad row.
+ */
+const rejectUnknownDepartments = async (
+  rows: ValidRow[],
+  rejected: RejectedRow[]
+): Promise<ValidRow[]> => {
+  const departments = await prisma.department.findMany({ select: { name: true } });
+  const names = new Set(departments.map((d) => d.name));
+  return rows.filter((row) => {
+    if (names.has(row.data.department)) {
+      return true;
+    }
+    rejected.push({ raw: row.raw, reasonKeys: ['errors.validation.common.unknownDepartment'] });
+    return false;
+  });
 };
 
 /**
@@ -297,7 +315,8 @@ export const importEmployeesCsv = async (
 ): Promise<ImportResult> => {
   const { validRows, rejected } = await parseAndValidate(fileBuffer);
   const deduped = dedupeKeepLast(validRows, rejected);
-  const { imported, updated, unchanged } = await commitRows(deduped);
+  const known = await rejectUnknownDepartments(deduped, rejected);
+  const { imported, updated, unchanged } = await commitRows(known.map((row) => row.data));
 
   logger.info('CSV import completed', {
     imported,

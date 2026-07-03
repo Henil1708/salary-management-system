@@ -31,17 +31,18 @@ const HR_USER = {
   designation: 'HR Manager',
 };
 
-// Median annual salary in LOCAL currency per (country, level) — the bands that
+// Median MONTHLY salary in LOCAL currency per (country, level) — salaries are
+// stored and reported monthly (a monthly payroll run), not annual. These bands
 // make "average salary by country/level" a meaningful chart.
 const SALARY_BANDS: Record<CountryCode, Record<JobLevel, number>> = {
-  US: { Junior: 70_000, Mid: 95_000, Senior: 130_000, Manager: 160_000, Director: 210_000 },
-  GB: { Junior: 40_000, Mid: 55_000, Senior: 75_000, Manager: 95_000, Director: 130_000 },
-  DE: { Junior: 48_000, Mid: 62_000, Senior: 80_000, Manager: 100_000, Director: 135_000 },
-  IN: { Junior: 800_000, Mid: 1_400_000, Senior: 2_200_000, Manager: 3_200_000, Director: 5_000_000 },
-  JP: { Junior: 4_500_000, Mid: 6_000_000, Senior: 8_000_000, Manager: 10_500_000, Director: 14_000_000 },
-  CA: { Junior: 65_000, Mid: 85_000, Senior: 110_000, Manager: 135_000, Director: 180_000 },
-  AU: { Junior: 70_000, Mid: 90_000, Senior: 118_000, Manager: 145_000, Director: 190_000 },
-  BR: { Junior: 90_000, Mid: 130_000, Senior: 190_000, Manager: 260_000, Director: 380_000 },
+  US: { Junior: 5_800, Mid: 7_900, Senior: 10_800, Manager: 13_300, Director: 17_500 },
+  GB: { Junior: 3_300, Mid: 4_600, Senior: 6_300, Manager: 7_900, Director: 10_800 },
+  DE: { Junior: 4_000, Mid: 5_200, Senior: 6_700, Manager: 8_300, Director: 11_300 },
+  IN: { Junior: 66_700, Mid: 116_700, Senior: 183_300, Manager: 266_700, Director: 416_700 },
+  JP: { Junior: 375_000, Mid: 500_000, Senior: 666_700, Manager: 875_000, Director: 1_166_700 },
+  CA: { Junior: 5_400, Mid: 7_100, Senior: 9_200, Manager: 11_300, Director: 15_000 },
+  AU: { Junior: 5_800, Mid: 7_500, Senior: 9_800, Manager: 12_100, Director: 15_800 },
+  BR: { Junior: 7_500, Mid: 10_800, Senior: 15_800, Manager: 21_700, Director: 31_700 },
 };
 
 const FX_RATES_TO_USD: Record<string, number> = {

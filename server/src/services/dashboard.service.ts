@@ -1,4 +1,11 @@
-import { DashboardDimension } from '@salary/shared';
+import {
+  DashboardDimension,
+  DashboardSummary,
+  DimensionStat,
+  PayBand,
+  PayrollTrendPoint,
+  RecentChange,
+} from '@salary/shared';
 import prisma from '@config/database';
 import { Prisma } from '../generated/prisma/client';
 
@@ -18,14 +25,6 @@ const FX_CTE = Prisma.sql`
   )
 `;
 
-export interface DashboardSummary {
-  headcount: number;
-  activeHeadcount: number;
-  totalPayrollCostUsd: number;
-  averageSalaryUsd: number;
-  medianSalaryUsd: number;
-}
-
 export const getSummary = async (): Promise<DashboardSummary> => {
   const [row] = await prisma.$queryRaw<[DashboardSummary]>`
     ${FX_CTE}
@@ -43,13 +42,6 @@ export const getSummary = async (): Promise<DashboardSummary> => {
   `;
   return row;
 };
-
-export interface DimensionStat {
-  key: string;
-  headcount: number;
-  averageSalaryUsd: number;
-  medianSalaryUsd: number;
-}
 
 // The dimension arrives validated against the shared enum; each case maps to
 // a static SQL fragment — nothing user-supplied is interpolated.
@@ -91,16 +83,6 @@ export const getSalaryByDimension = async (
   `;
 };
 
-export interface PayBand {
-  jobLevel: string;
-  headcount: number;
-  minUsd: number;
-  p25Usd: number;
-  medianUsd: number;
-  p75Usd: number;
-  maxUsd: number;
-}
-
 export const getPayBands = async (): Promise<PayBand[]> => {
   return prisma.$queryRaw<PayBand[]>`
     ${FX_CTE}
@@ -124,16 +106,41 @@ export const getPayBands = async (): Promise<PayBand[]> => {
   `;
 };
 
-export interface RecentChange {
-  employeeId: string;
-  employeeCode: string;
-  firstName: string;
-  lastName: string;
-  amount: number;
-  currency: string;
-  effectiveDate: Date;
-  reason: string;
-}
+/**
+ * Monthly payroll cost over the last 12 months (docs/TRADEOFFS.md §6 — SQL,
+ * not app-layer). For each month, a LATERAL as-of join picks each active
+ * employee's salary in effect at that month's end (greatest effectiveDate ≤
+ * month end), normalized to USD. Backed by the (employeeId, effectiveDate)
+ * index so 10k × 12 lookups stay fast.
+ */
+export const getPayrollTrend = async (months = 12): Promise<PayrollTrendPoint[]> => {
+  return prisma.$queryRaw<PayrollTrendPoint[]>`
+    ${FX_CTE},
+    series AS (
+      SELECT generate_series(
+        date_trunc('month', CURRENT_DATE) - make_interval(months => ${months - 1}),
+        date_trunc('month', CURRENT_DATE),
+        interval '1 month'
+      ) AS month
+    )
+    SELECT
+      to_char(s.month, 'YYYY-MM')                       AS "month",
+      COALESCE(ROUND(SUM(asof.amount * fx."rateToUSD")), 0)::float8 AS "payrollUsd"
+    FROM series s
+    JOIN "Employee" e ON e.status = 'ACTIVE'
+    JOIN LATERAL (
+      SELECT sr.amount, sr.currency
+      FROM "SalaryRecord" sr
+      WHERE sr."employeeId" = e.id
+        AND sr."effectiveDate" < (s.month + interval '1 month')
+      ORDER BY sr."effectiveDate" DESC
+      LIMIT 1
+    ) asof ON true
+    JOIN fx ON fx.currency = asof.currency
+    GROUP BY s.month
+    ORDER BY s.month
+  `;
+};
 
 export const getRecentChanges = async (limit: number): Promise<RecentChange[]> => {
   const rows = await prisma.salaryRecord.findMany({

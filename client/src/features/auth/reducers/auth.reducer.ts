@@ -7,6 +7,7 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGOUT,
+  PROFILE_UPDATED,
   SESSION_RESTORE_FAILURE,
   SESSION_RESTORE_REQUEST,
   SESSION_RESTORE_SUCCESS,
@@ -42,6 +43,8 @@ export const authReducer = (
       return { user: action.payload, status: 'authenticated', errorCode: null };
     case LOGIN_FAILURE:
       return { ...state, status: 'unauthenticated', errorCode: action.payload.errorCode };
+    case PROFILE_UPDATED:
+      return { ...state, user: action.payload };
     case SESSION_RESTORE_REQUEST:
       return { ...state, status: 'restoring' };
     case SESSION_RESTORE_FAILURE:

@@ -129,6 +129,8 @@ export const apiClient = {
     request<T>({ ...config, method: 'POST', url, data }),
   patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'PATCH', url, data }),
+  delete: <T>(url: string, config?: AxiosRequestConfig) =>
+    request<T>({ ...config, method: 'DELETE', url }),
   /** For file downloads — returns the raw blob, no envelope unwrapping. */
   getBlob: async (url: string, config?: AxiosRequestConfig): Promise<Blob> => {
     const response = await instance.get<Blob>(url, { ...config, responseType: 'blob' });

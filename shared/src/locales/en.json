@@ -5,6 +5,7 @@
         "invalid": "This value is invalid",
         "emailRequired": "Email is required",
         "invalidEmail": "Invalid email address",
+        "departmentRequired": "Department is required",
         "unknownDepartment": "Unknown department",
         "unknownCountry": "Unknown country code",
         "unknownJobLevel": "Unknown job level",
@@ -18,6 +19,8 @@
       "auth": {
         "identifierRequired": "Email or username is required",
         "passwordRequired": "Password is required",
+        "currentPasswordRequired": "Current password is required",
+        "currentPasswordWrong": "Current password is incorrect",
         "tokenRequired": "Reset token is required",
         "passwordTooShort": "Password must be at least {{passwordMin}} characters",
         "passwordTooLong": "Password must be less than {{passwordMax}} characters",
@@ -37,6 +40,22 @@
         "invalidEffectiveDate": "Invalid or missing effective date",
         "reasonRequired": "Reason is required",
         "reasonTooLong": "Reason must be at most {{reasonMax}} characters"
+      },
+      "user": {
+        "usernameRequired": "Username is required",
+        "usernameTooShort": "Username must be at least 3 characters",
+        "usernameTooLong": "Username must be at most {{nameMax}} characters",
+        "designationRequired": "Designation is required",
+        "designationTooLong": "Designation must be at most {{nameMax}} characters"
+      },
+      "department": {
+        "nameRequired": "Department name is required",
+        "nameTooShort": "Department name must be at least 2 characters",
+        "nameTooLong": "Department name must be at most {{nameMax}} characters"
+      },
+      "payroll": {
+        "periodRequired": "Pay period is required",
+        "periodInvalid": "Pay period must be a month (YYYY-MM)"
       }
     },
     "codes": {
@@ -51,27 +70,46 @@
       "RATE_LIMITED": "Too many attempts. Please try again later.",
       "RESET_TOKEN_INVALID": "This link is invalid or has expired. Please request a new one.",
       "IMPORT_FILE_REQUIRED": "Please attach a CSV file",
-      "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns"
+      "IMPORT_INVALID_HEADERS": "The CSV file is missing required columns",
+      "DEPARTMENT_HAS_EMPLOYEES": "This department still has employees assigned",
+      "DEPARTMENT_NAME_TAKEN": "A department with this name already exists",
+      "PAYROLL_PERIOD_EXISTS": "A payroll run already exists for this month",
+      "PAYROLL_RUN_NOT_FOUND": "Payroll run not found"
     }
   },
   "common": {
     "appName": "Salary Management",
+    "brandName": "ACME",
+    "brandTagline": "Salary Management System",
     "loading": "Loading…",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
     "search": "Search",
     "export": "Export CSV",
+    "perMonth": "/mo",
     "noResults": "No results found",
+    "toast": {
+      "employeeCreated": "Employee created",
+      "employeeUpdated": "Employee updated",
+      "salaryAdded": "Salary revision added",
+      "userCreated": "HR user created",
+      "profileUpdated": "Profile updated",
+      "passwordChanged": "Password updated"
+    },
     "errors": {
       "generic": "Something went wrong. Please try again."
     }
   },
   "auth": {
     "login": {
-      "title": "Sign in",
+      "title": "Welcome back!",
+      "subtitle": "Sign in to your account to continue",
       "identifierLabel": "Email or username",
+      "identifierPlaceholder": "Enter your email or username",
       "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
       "submit": "Sign in",
       "forgotPasswordLink": "Forgot password?"
     },
@@ -87,12 +125,18 @@
       "invalidToken": "This link is invalid or has expired. Please request a new one.",
       "success": "Your password has been reset. You can now sign in."
     },
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "backToLogin": "Back to sign in"
   },
   "employee": {
+    "nav": "Employees",
     "directory": {
       "title": "Employee Directory",
+      "subtitle": "{{total}} employees",
       "searchPlaceholder": "Search by name, email or employee ID",
+      "addEmployee": "Add employee",
+      "allFilter": "All",
+      "empty": "No employees match your filters",
       "filters": {
         "department": "Department",
         "country": "Country",
@@ -107,13 +151,40 @@
         "country": "Country",
         "jobLevel": "Level",
         "status": "Status",
-        "currentSalary": "Current salary"
+        "currentSalary": "Monthly salary"
+      },
+      "pagination": {
+        "range": "{{from}}–{{to}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "profile": {
       "title": "Employee Profile",
+      "back": "Back to directory",
       "hireDate": "Hire date",
-      "editTitle": "Edit employee"
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "edit": "Edit",
+      "editTitle": "Edit employee",
+      "createTitle": "Add employee",
+      "notFound": "Employee not found"
+    },
+    "form": {
+      "employeeCode": "Employee ID",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "hireDate": "Hire date",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "salary": {
@@ -132,17 +203,176 @@
       "submit": "Add revision"
     }
   },
+  "salaries": {
+    "nav": "Salaries",
+    "title": "Salaries",
+    "subtitle": "Manage compensation across the organization",
+    "addSalary": "Add salary",
+    "allTitle": "All salaries",
+    "count": "{{total}} employees",
+    "employee": "Employee",
+    "department": "Department",
+    "country": "Country",
+    "effectiveSince": "Effective since",
+    "selectEmployee": "Employee",
+    "searchEmployee": "Search an employee to update…",
+    "noEmployee": "Select an employee first",
+    "empty": "No salaries found"
+  },
   "dashboard": {
-    "title": "Insights Dashboard",
-    "headcount": "Headcount",
-    "averageSalary": "Average salary",
-    "medianSalary": "Median salary",
-    "totalPayrollCost": "Total payroll cost",
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}} 👋",
+    "cards": {
+      "totalEmployees": "Total Employees",
+      "activeCaption": "{{count}} active",
+      "averageSalary": "Avg. Monthly Salary",
+      "medianCaption": "Median {{value}}",
+      "totalPayroll": "Monthly Payroll",
+      "normalizedCaption": "Normalized to USD",
+      "countries": "Countries",
+      "currenciesCaption": "{{count}} currencies"
+    },
+    "payrollTrend": {
+      "title": "Payroll Trend",
+      "subtitle": "Monthly payroll cost, last 12 months (USD)"
+    },
+    "salaryOverview": {
+      "title": "Salary Overview",
+      "average": "Average salary",
+      "median": "Median salary",
+      "employees": "Employees"
+    },
     "byDepartment": "By department",
     "byCountry": "By country",
     "byJobLevel": "By job level",
-    "payBands": "Pay bands",
-    "recentChanges": "Recent salary changes"
+    "departmentShare": {
+      "title": "Employees by Department",
+      "department": "Department",
+      "employees": "Employees",
+      "percentOfTotal": "% of Total"
+    },
+    "payrollByCountry": {
+      "title": "Payroll by Country",
+      "country": "Country",
+      "payroll": "Payroll"
+    },
+    "recentChanges": {
+      "title": "Recent Salary Updates"
+    }
+  },
+  "users": {
+    "nav": "Users",
+    "title": "Users",
+    "subtitle": "HR users who can access this system",
+    "addUser": "Add HR user",
+    "empty": "No HR users yet",
+    "columns": {
+      "name": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "joined": "Joined"
+    },
+    "form": {
+      "username": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "password": "Temporary password",
+      "save": "Create user",
+      "cancel": "Cancel"
+    }
+  },
+  "payroll": {
+    "nav": "Payroll",
+    "title": "Payroll",
+    "subtitle": "Run payroll and track what's been paid",
+    "runPayroll": "Run payroll",
+    "runsTitle": "Payroll runs",
+    "empty": "No payroll runs yet",
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "PAID": "Paid"
+    },
+    "columns": {
+      "period": "Pay period",
+      "employees": "Employees",
+      "total": "Total",
+      "paid": "Paid",
+      "status": "Status"
+    },
+    "run": {
+      "back": "Back to payroll",
+      "title": "Payroll — {{period}}",
+      "summary": "{{paid}} of {{total}} paid",
+      "payAll": "Mark all paid",
+      "payFiltered": "Mark filtered as paid",
+      "markPaid": "Mark paid",
+      "markPending": "Mark pending",
+      "itemEmployee": "Employee",
+      "itemAmount": "Amount",
+      "itemStatus": "Status",
+      "filters": {
+        "search": "Search by name or ID",
+        "department": "Department",
+        "all": "All",
+        "minUsd": "Min (USD)",
+        "maxUsd": "Max (USD)"
+      }
+    },
+    "generate": {
+      "title": "Run payroll",
+      "period": "Pay period",
+      "hint": "Creates a line for every active employee at their current salary.",
+      "submit": "Create run",
+      "cancel": "Cancel"
+    }
+  },
+  "departments": {
+    "nav": "Departments",
+    "title": "Departments",
+    "subtitle": "Organize your workforce into departments",
+    "addDepartment": "Add department",
+    "empty": "No departments yet",
+    "count": "{{total}} departments",
+    "columns": {
+      "name": "Department",
+      "employees": "Employees"
+    },
+    "form": {
+      "name": "Department name",
+      "createTitle": "Add department",
+      "editTitle": "Rename department",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "delete": {
+      "title": "Delete department",
+      "confirm": "Delete \"{{name}}\"? This can't be undone.",
+      "action": "Delete",
+      "blocked": "Reassign its {{count}} employees before deleting."
+    }
+  },
+  "settings": {
+    "nav": "Settings",
+    "title": "Settings",
+    "subtitle": "Manage your profile and password",
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Update your account details",
+      "username": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "save": "Save changes",
+      "saved": "Profile updated"
+    },
+    "password": {
+      "title": "Change password",
+      "subtitle": "Choose a strong password you don't use elsewhere",
+      "current": "Current password",
+      "new": "New password",
+      "save": "Update password",
+      "saved": "Password updated"
+    }
   },
   "import": {
     "title": "Bulk Import (CSV)",
