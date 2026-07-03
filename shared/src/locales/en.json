@@ -18,6 +18,8 @@
       "auth": {
         "identifierRequired": "Email or username is required",
         "passwordRequired": "Password is required",
+        "currentPasswordRequired": "Current password is required",
+        "currentPasswordWrong": "Current password is incorrect",
         "tokenRequired": "Reset token is required",
         "passwordTooShort": "Password must be at least {{passwordMin}} characters",
         "passwordTooLong": "Password must be less than {{passwordMax}} characters",
@@ -37,6 +39,13 @@
         "invalidEffectiveDate": "Invalid or missing effective date",
         "reasonRequired": "Reason is required",
         "reasonTooLong": "Reason must be at most {{reasonMax}} characters"
+      },
+      "user": {
+        "usernameRequired": "Username is required",
+        "usernameTooShort": "Username must be at least 3 characters",
+        "usernameTooLong": "Username must be at most {{nameMax}} characters",
+        "designationRequired": "Designation is required",
+        "designationTooLong": "Designation must be at most {{nameMax}} characters"
       }
     },
     "codes": {
@@ -64,7 +73,16 @@
     "edit": "Edit",
     "search": "Search",
     "export": "Export CSV",
+    "perMonth": "/mo",
     "noResults": "No results found",
+    "toast": {
+      "employeeCreated": "Employee created",
+      "employeeUpdated": "Employee updated",
+      "salaryAdded": "Salary revision added",
+      "userCreated": "HR user created",
+      "profileUpdated": "Profile updated",
+      "passwordChanged": "Password updated"
+    },
     "errors": {
       "generic": "Something went wrong. Please try again."
     }
@@ -97,9 +115,14 @@
     "backToLogin": "Back to sign in"
   },
   "employee": {
+    "nav": "Employees",
     "directory": {
       "title": "Employee Directory",
+      "subtitle": "{{total}} employees",
       "searchPlaceholder": "Search by name, email or employee ID",
+      "addEmployee": "Add employee",
+      "allFilter": "All",
+      "empty": "No employees match your filters",
       "filters": {
         "department": "Department",
         "country": "Country",
@@ -114,13 +137,40 @@
         "country": "Country",
         "jobLevel": "Level",
         "status": "Status",
-        "currentSalary": "Current salary"
+        "currentSalary": "Monthly salary"
+      },
+      "pagination": {
+        "range": "{{from}}–{{to}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "profile": {
       "title": "Employee Profile",
+      "back": "Back to directory",
       "hireDate": "Hire date",
-      "editTitle": "Edit employee"
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "edit": "Edit",
+      "editTitle": "Edit employee",
+      "createTitle": "Add employee",
+      "notFound": "Employee not found"
+    },
+    "form": {
+      "employeeCode": "Employee ID",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "hireDate": "Hire date",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "salary": {
@@ -139,18 +189,38 @@
       "submit": "Add revision"
     }
   },
+  "salaries": {
+    "nav": "Salaries",
+    "title": "Salaries",
+    "subtitle": "Manage compensation across the organization",
+    "addSalary": "Add salary",
+    "allTitle": "All salaries",
+    "count": "{{total}} employees",
+    "employee": "Employee",
+    "department": "Department",
+    "country": "Country",
+    "effectiveSince": "Effective since",
+    "selectEmployee": "Employee",
+    "searchEmployee": "Search an employee to update…",
+    "noEmployee": "Select an employee first",
+    "empty": "No salaries found"
+  },
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back, {{name}} 👋",
     "cards": {
       "totalEmployees": "Total Employees",
       "activeCaption": "{{count}} active",
-      "averageSalary": "Average Salary",
+      "averageSalary": "Avg. Monthly Salary",
       "medianCaption": "Median {{value}}",
-      "totalPayroll": "Total Payroll",
+      "totalPayroll": "Monthly Payroll",
       "normalizedCaption": "Normalized to USD",
       "countries": "Countries",
       "currenciesCaption": "{{count}} currencies"
+    },
+    "payrollTrend": {
+      "title": "Payroll Trend",
+      "subtitle": "Monthly payroll cost, last 12 months (USD)"
     },
     "salaryOverview": {
       "title": "Salary Overview",
@@ -174,6 +244,49 @@
     },
     "recentChanges": {
       "title": "Recent Salary Updates"
+    }
+  },
+  "users": {
+    "nav": "Users",
+    "title": "Users",
+    "subtitle": "HR users who can access this system",
+    "addUser": "Add HR user",
+    "empty": "No HR users yet",
+    "columns": {
+      "name": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "joined": "Joined"
+    },
+    "form": {
+      "username": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "password": "Temporary password",
+      "save": "Create user",
+      "cancel": "Cancel"
+    }
+  },
+  "settings": {
+    "nav": "Settings",
+    "title": "Settings",
+    "subtitle": "Manage your profile and password",
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Update your account details",
+      "username": "Username",
+      "email": "Email",
+      "designation": "Designation",
+      "save": "Save changes",
+      "saved": "Profile updated"
+    },
+    "password": {
+      "title": "Change password",
+      "subtitle": "Choose a strong password you don't use elsewhere",
+      "current": "Current password",
+      "new": "New password",
+      "save": "Update password",
+      "saved": "Password updated"
     }
   },
   "import": {

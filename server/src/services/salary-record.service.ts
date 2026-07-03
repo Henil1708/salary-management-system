@@ -1,16 +1,6 @@
-import { CreateSalaryRecordInput } from '@salary/shared';
+import { CreateSalaryRecordInput, SalaryRecordDto } from '@salary/shared';
 import prisma from '@config/database';
 import { NotFoundError } from '@utils/errors';
-
-export interface SalaryRecordDto {
-  id: string;
-  amount: number;
-  currency: string;
-  effectiveDate: Date;
-  reason: string;
-  isCurrent: boolean;
-  createdAt: Date;
-}
 
 interface SalaryRecordRow {
   id: string;

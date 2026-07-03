@@ -1,5 +1,11 @@
 import { UnknownAction } from 'redux';
-import { DashboardDimension, DashboardSummary, DimensionStat, RecentChange } from '@salary/shared';
+import {
+  DashboardDimension,
+  DashboardSummary,
+  DimensionStat,
+  PayrollTrendPoint,
+  RecentChange,
+} from '@salary/shared';
 import {
   DashboardAction,
   FETCH_DIMENSION_FAILURE,
@@ -9,11 +15,13 @@ import {
   FETCH_SUMMARY_FAILURE,
   FETCH_SUMMARY_REQUEST,
   FETCH_SUMMARY_SUCCESS,
+  FETCH_TREND_SUCCESS,
 } from '../actions/dashboard.actionTypes';
 
 export interface DashboardState {
   summary: DashboardSummary | null;
   byDimension: Partial<Record<DashboardDimension, DimensionStat[]>>;
+  payrollTrend: PayrollTrendPoint[];
   recentChanges: RecentChange[];
   loading: boolean;
   errorCode: string | null;
@@ -22,6 +30,7 @@ export interface DashboardState {
 const initialState: DashboardState = {
   summary: null,
   byDimension: {},
+  payrollTrend: [],
   recentChanges: [],
   loading: false,
   errorCode: null,
@@ -44,6 +53,8 @@ export const dashboardReducer = (
       };
     case FETCH_RECENT_SUCCESS:
       return { ...state, recentChanges: action.payload };
+    case FETCH_TREND_SUCCESS:
+      return { ...state, payrollTrend: action.payload };
     case FETCH_SUMMARY_FAILURE:
     case FETCH_DIMENSION_FAILURE:
     case FETCH_RECENT_FAILURE:

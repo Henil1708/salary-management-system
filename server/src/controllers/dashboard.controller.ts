@@ -3,6 +3,7 @@ import { DashboardDimension } from '@salary/shared';
 import { sendSuccess } from '@utils/api-response';
 import {
   getPayBands,
+  getPayrollTrend,
   getRecentChanges,
   getSalaryByDimension,
   getSummary,
@@ -38,6 +39,18 @@ export const payBands = async (
 ): Promise<void> => {
   try {
     sendSuccess(res, await getPayBands());
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const payrollTrend = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    sendSuccess(res, await getPayrollTrend());
   } catch (error) {
     next(error);
   }

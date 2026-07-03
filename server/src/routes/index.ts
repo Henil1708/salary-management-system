@@ -4,6 +4,7 @@ import dashboardRoutes from '@routes/dashboard.routes';
 import employeeRoutes from '@routes/employee.routes';
 import exportRoutes from '@routes/export.routes';
 import importRoutes from '@routes/import.routes';
+import userRoutes from '@routes/user.routes';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/employees', employeeRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/import', importRoutes);
 router.use('/export', exportRoutes);
+router.use('/users', userRoutes);
 
 export default router;

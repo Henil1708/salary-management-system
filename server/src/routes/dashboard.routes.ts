@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import { dashboardDimensionQuerySchema, recentChangesQuerySchema } from '@salary/shared';
-import { byDimension, payBands, recentChanges, summary } from '@controllers/dashboard.controller';
+import {
+  byDimension,
+  payBands,
+  payrollTrend,
+  recentChanges,
+  summary,
+} from '@controllers/dashboard.controller';
 import { requireAuth } from '@middleware/auth';
 import { validateRequest } from '@middleware/validate';
 
@@ -15,6 +21,7 @@ router.get(
   byDimension
 );
 router.get('/pay-bands', payBands);
+router.get('/payroll-trend', payrollTrend);
 router.get(
   '/recent-changes',
   validateRequest({ query: recentChangesQuerySchema }),

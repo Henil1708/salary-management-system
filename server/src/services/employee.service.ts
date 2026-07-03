@@ -1,5 +1,6 @@
 import {
   CreateEmployeeInput,
+  EmployeeDto,
   EmployeeListQuery,
   Paginated,
   UpdateEmployeeInput,
@@ -7,24 +8,6 @@ import {
 import prisma from '@config/database';
 import { Prisma } from '../generated/prisma/client';
 import { BadRequestError, NotFoundError } from '@utils/errors';
-
-// Shape returned to the client: reference relations flattened to their
-// natural keys (name/code — the same values the shared enums validate), and
-// the current salary resolved from the append-only ledger's isCurrent flag.
-export interface EmployeeDto {
-  id: string;
-  employeeCode: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  department: string;
-  countryCode: string;
-  countryName: string;
-  jobLevel: string;
-  status: string;
-  hireDate: Date;
-  currentSalary: { amount: number; currency: string; effectiveDate: Date } | null;
-}
 
 const employeeSelect = {
   id: true,

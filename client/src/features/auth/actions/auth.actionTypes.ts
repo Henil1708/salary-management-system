@@ -9,6 +9,8 @@ export const SESSION_RESTORE_FAILURE = 'auth/SESSION_RESTORE_FAILURE' as const;
 
 export const LOGOUT = 'auth/LOGOUT' as const;
 
+export const PROFILE_UPDATED = 'auth/PROFILE_UPDATED' as const;
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -23,4 +25,5 @@ export type AuthAction =
   | { type: typeof SESSION_RESTORE_REQUEST }
   | { type: typeof SESSION_RESTORE_SUCCESS; payload: AuthUser }
   | { type: typeof SESSION_RESTORE_FAILURE }
-  | { type: typeof LOGOUT };
+  | { type: typeof LOGOUT }
+  | { type: typeof PROFILE_UPDATED; payload: AuthUser };

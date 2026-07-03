@@ -1,4 +1,10 @@
-import { DashboardDimension, DashboardSummary, DimensionStat, RecentChange } from '@salary/shared';
+import {
+  DashboardDimension,
+  DashboardSummary,
+  DimensionStat,
+  PayrollTrendPoint,
+  RecentChange,
+} from '@salary/shared';
 
 export const FETCH_SUMMARY_REQUEST = 'dashboard/FETCH_SUMMARY_REQUEST' as const;
 export const FETCH_SUMMARY_SUCCESS = 'dashboard/FETCH_SUMMARY_SUCCESS' as const;
@@ -12,6 +18,10 @@ export const FETCH_RECENT_REQUEST = 'dashboard/FETCH_RECENT_REQUEST' as const;
 export const FETCH_RECENT_SUCCESS = 'dashboard/FETCH_RECENT_SUCCESS' as const;
 export const FETCH_RECENT_FAILURE = 'dashboard/FETCH_RECENT_FAILURE' as const;
 
+export const FETCH_TREND_REQUEST = 'dashboard/FETCH_TREND_REQUEST' as const;
+export const FETCH_TREND_SUCCESS = 'dashboard/FETCH_TREND_SUCCESS' as const;
+export const FETCH_TREND_FAILURE = 'dashboard/FETCH_TREND_FAILURE' as const;
+
 export type DashboardAction =
   | { type: typeof FETCH_SUMMARY_REQUEST }
   | { type: typeof FETCH_SUMMARY_SUCCESS; payload: DashboardSummary }
@@ -24,4 +34,7 @@ export type DashboardAction =
   | { type: typeof FETCH_DIMENSION_FAILURE; payload: { errorCode: string } }
   | { type: typeof FETCH_RECENT_REQUEST }
   | { type: typeof FETCH_RECENT_SUCCESS; payload: RecentChange[] }
-  | { type: typeof FETCH_RECENT_FAILURE; payload: { errorCode: string } };
+  | { type: typeof FETCH_RECENT_FAILURE; payload: { errorCode: string } }
+  | { type: typeof FETCH_TREND_REQUEST }
+  | { type: typeof FETCH_TREND_SUCCESS; payload: PayrollTrendPoint[] }
+  | { type: typeof FETCH_TREND_FAILURE; payload: { errorCode: string } };

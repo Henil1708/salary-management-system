@@ -12,6 +12,9 @@ import {
   FETCH_SUMMARY_FAILURE,
   FETCH_SUMMARY_REQUEST,
   FETCH_SUMMARY_SUCCESS,
+  FETCH_TREND_FAILURE,
+  FETCH_TREND_REQUEST,
+  FETCH_TREND_SUCCESS,
 } from './dashboard.actionTypes';
 
 const toErrorCode = (error: unknown): string =>
@@ -55,9 +58,19 @@ export const fetchRecentChanges =
     }
   };
 
+export const fetchPayrollTrend = (): AppThunk<Promise<void>> => async (dispatch) => {
+  dispatch({ type: FETCH_TREND_REQUEST });
+  try {
+    dispatch({ type: FETCH_TREND_SUCCESS, payload: await DashboardService.payrollTrend() });
+  } catch (error) {
+    dispatch({ type: FETCH_TREND_FAILURE, payload: { errorCode: toErrorCode(error) } });
+  }
+};
+
 /** Everything the dashboard page needs, fired in parallel. */
 export const fetchDashboard = (): AppThunk => (dispatch) => {
   void dispatch(fetchSummary());
+  void dispatch(fetchPayrollTrend());
   void dispatch(fetchDimension('department'));
   void dispatch(fetchDimension('country'));
   void dispatch(fetchRecentChanges());

@@ -1,9 +1,10 @@
+import { UpdateProfileInput } from '@salary/shared';
 import prisma from '@config/database';
 import { env } from '@config/env';
 import { User } from '../generated/prisma/client';
-import { BadRequestError, UnauthorizedError } from '@utils/errors';
+import { BadRequestError, FieldValidationError, UnauthorizedError } from '@utils/errors';
 import { generateResetToken, hashResetToken, signTokenPair } from '@utils/jwt';
-import { hashPassword } from '@utils/password';
+import { comparePassword, hashPassword } from '@utils/password';
 import logger from '@utils/logger';
 
 export interface PublicUser {
@@ -31,6 +32,49 @@ export const getProfile = async (userId: string): Promise<PublicUser> => {
     throw new UnauthorizedError('Account no longer exists', 'AUTH_UNAUTHORIZED');
   }
   return toPublicUser(user);
+};
+
+/** Self-service profile update (Settings). Duplicate email/username → P2002 → fail envelope. */
+export const updateProfile = async (
+  userId: string,
+  input: UpdateProfileInput
+): Promise<PublicUser> => {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { username: input.username, email: input.email, designation: input.designation },
+  });
+  return toPublicUser(user);
+};
+
+/**
+ * Self-service password change: verify the current password, then in one
+ * transaction write the new hash and bump tokenVersion (kills other sessions).
+ * A fresh token pair is returned so the CURRENT session survives the bump.
+ */
+export const changePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<{ accessToken: string; refreshToken: string }> => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new UnauthorizedError('Account no longer exists', 'AUTH_UNAUTHORIZED');
+  }
+  if (!(await comparePassword(currentPassword, user.passwordHash))) {
+    throw new FieldValidationError({
+      currentPassword: 'errors.validation.auth.currentPasswordWrong',
+    });
+  }
+
+  const [updated] = await prisma.$transaction([
+    prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: await hashPassword(newPassword), tokenVersion: { increment: 1 } },
+    }),
+  ]);
+
+  logger.info('Password changed', { userId });
+  return signTokenPair(updated);
 };
 
 /**

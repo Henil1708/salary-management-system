@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { sendSuccess } from '@utils/api-response';
 import {
+  changePassword as changePasswordService,
   getProfile,
   issueTokens,
   requestPasswordReset,
   resetPassword as resetPasswordService,
   toPublicUser,
+  updateProfile as updateProfileService,
 } from '@services/auth.service';
 
 // req.user is set by requireLocalCredentials (full DB user attached)
@@ -54,6 +56,31 @@ export const resetPassword = async (
 export const me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     sendSuccess(res, await getProfile(req.user!.userId));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    sendSuccess(res, await updateProfileService(req.user!.userId, req.body));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const tokens = await changePasswordService(
+      req.user!.userId,
+      req.body.currentPassword,
+      req.body.newPassword
+    );
+    sendSuccess(res, tokens);
   } catch (error) {
     next(error);
   }
