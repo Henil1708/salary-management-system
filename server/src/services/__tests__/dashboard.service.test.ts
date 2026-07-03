@@ -36,7 +36,7 @@ const rawSqlOfCall = (call: unknown[]): string => {
 beforeEach(() => jest.clearAllMocks());
 
 describe('getSummary', () => {
-  it('computes everything in one SQL statement over isCurrent rows', async () => {
+  it('computes everything in one SQL statement over the as-of population', async () => {
     const row = {
       headcount: 10000,
       activeHeadcount: 9580,
@@ -50,7 +50,8 @@ describe('getSummary', () => {
 
     expect(mockPrisma.$queryRaw).toHaveBeenCalledTimes(1);
     const sql = rawSqlOfCall(mockPrisma.$queryRaw.mock.calls[0]!);
-    expect(sql).toContain('"isCurrent"');
+    // as-of population: latest salary with effectiveDate <= asOf, per employee
+    expect(sql).toContain('"effectiveDate" <=');
     expect(sql).toContain('PERCENTILE_CONT(0.5)');
     expect(sql).toContain('"rateToUSD"'); // normalized via the FX table
     expect(sql).toContain(`status = 'ACTIVE'`);

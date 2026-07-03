@@ -87,6 +87,7 @@
     "edit": "Edit",
     "search": "Search",
     "export": "Export CSV",
+    "exporting": "Exporting…",
     "perMonth": "/mo",
     "noResults": "No results found",
     "toast": {
@@ -222,6 +223,17 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back, {{name}} 👋",
+    "range": {
+      "allTime": "All time",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days",
+      "custom": "Custom range",
+      "asOf": "As of {{date}}",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply"
+    },
     "cards": {
       "totalEmployees": "Total Employees",
       "activeCaption": "{{count}} active",
@@ -234,7 +246,7 @@
     },
     "payrollTrend": {
       "title": "Payroll Trend",
-      "subtitle": "Monthly payroll cost, last 12 months (USD)"
+      "subtitle": "Monthly payroll cost, 12 months ending at the selected date (USD)"
     },
     "salaryOverview": {
       "title": "Salary Overview",
@@ -375,10 +387,19 @@
     }
   },
   "import": {
-    "title": "Bulk Import (CSV)",
-    "uploadPrompt": "Upload a CSV file to create or update employees and salaries",
+    "title": "Import CSV",
+    "button": "Import",
+    "uploadPrompt": "Upload a CSV to create or update employees and their salaries. Existing employees are matched by email.",
+    "chooseFile": "Choose CSV file",
     "submit": "Import",
-    "summary": "{{imported}} created, {{updated}} updated, {{rejected}} rejected",
-    "downloadErrors": "Download rejected rows"
+    "importing": "Importing…",
+    "resultTitle": "Import complete",
+    "imported": "Created",
+    "updated": "Updated",
+    "unchanged": "Unchanged",
+    "rejected": "Rejected",
+    "downloadErrors": "Download rejected rows",
+    "done": "Done",
+    "genericError": "Import failed. Check the file and try again."
   }
 }

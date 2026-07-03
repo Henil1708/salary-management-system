@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import { formatCurrency, formatNumber } from '@/shared/utils/format';
-import { fetchDimension, getDimensionStats } from '@/features/dashboard';
+import { fetchDimension, getDashboardRange, getDimensionStats } from '@/features/dashboard';
 import { CHART_INK, SEQUENTIAL_PRIMARY } from '../constants/palette';
 
 const DIMENSION_LABEL_KEYS: Record<DashboardDimension, string> = {
@@ -36,10 +36,12 @@ export const SalaryByDimensionChart = () => {
   const dispatch = useAppDispatch();
   const [dimension, setDimension] = useState<DashboardDimension>('jobLevel');
   const rows = useAppSelector(getDimensionStats(dimension));
+  const range = useAppSelector(getDashboardRange);
 
+  // refetch on dimension OR range change (a range change clears the cache)
   useEffect(() => {
     void dispatch(fetchDimension(dimension));
-  }, [dispatch, dimension]);
+  }, [dispatch, dimension, range]);
 
   // params take recharts' wide ValueType/NameType — narrow inside
   const tooltipFormatter = (value: unknown): [string, string] => [

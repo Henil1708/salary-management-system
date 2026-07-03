@@ -13,6 +13,7 @@ import {
   getSummary,
 } from '@/features/dashboard';
 import { ChartCardSkeleton, StatCardSkeleton } from '@/shared/components/feedback/skeletons';
+import { DateRangeFilter } from '../components/DateRangeFilter';
 import { DepartmentDonut } from '../components/DepartmentDonut';
 import { PayrollTrendChart } from '../components/PayrollTrendChart';
 import { PayrollByCountry } from '../components/PayrollByCountry';
@@ -36,11 +37,14 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{t('dashboard.title')}</h1>
-        <p className="mt-0.5 text-muted-foreground">
-          {t('dashboard.welcome', { name: user?.designation ?? user?.username ?? '' })}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+          <p className="mt-0.5 text-muted-foreground">
+            {t('dashboard.welcome', { name: user?.designation ?? user?.username ?? '' })}
+          </p>
+        </div>
+        <DateRangeFilter />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -82,6 +86,8 @@ const DashboardPage = () => {
         )}
       </div>
 
+      {/* cards stretch to equal height; the trend chart fills its card
+          (see PayrollTrendChart) so there's no whitespace below it */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {payrollTrend.length > 0 ? (
@@ -99,7 +105,7 @@ const DashboardPage = () => {
 
       <SalaryByDimensionChart />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid items-start gap-4 lg:grid-cols-2">
         {countryStats ? <PayrollByCountry rows={countryStats} /> : <ChartCardSkeleton />}
         {recentChanges.length > 0 ? (
           <RecentChangesList rows={recentChanges} />
