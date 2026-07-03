@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
-import { COUNTRIES, DEPARTMENTS, EMPLOYEE_STATUSES, JOB_LEVELS } from '@salary/shared';
+import { COUNTRIES, EMPLOYEE_STATUSES, JOB_LEVELS } from '@salary/shared';
 import { useAppDispatch, useAppSelector } from '@/app/store/types';
+import { fetchDepartments, getDepartmentNames } from '@/features/departments';
 import { Input } from '@/shared/components/ui/input';
 import {
   Select,
@@ -20,9 +21,18 @@ export const EmployeeFilters = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const query = useAppSelector(getEmployeeQuery);
+  const departmentNames = useAppSelector(getDepartmentNames);
 
   const [search, setSearch] = useState(query.search ?? '');
   const debouncedSearch = useDebounce(search);
+
+  // department options are dynamic (DB-backed) — load them for the filter
+  useEffect(() => {
+    if (departmentNames.length === 0) {
+      void dispatch(fetchDepartments());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // only dispatch when the debounced term differs from what's in the query
@@ -70,7 +80,7 @@ export const EmployeeFilters = () => {
         {filterSelect(
           'department',
           t('employee.directory.filters.department'),
-          DEPARTMENTS.map((d) => ({ value: d, label: d }))
+          departmentNames.map((d) => ({ value: d, label: d }))
         )}
         {filterSelect(
           'countryCode',
