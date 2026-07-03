@@ -11,6 +11,7 @@ export * from './types/dashboard';
 export * from './types/employee';
 
 export * from './schemas/auth.schema';
+export * from './schemas/user.schema';
 export * from './schemas/employee.schema';
 export * from './schemas/salary-record.schema';
 export * from './schemas/csv-import.schema';

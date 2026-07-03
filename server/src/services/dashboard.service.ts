@@ -3,6 +3,7 @@ import {
   DashboardSummary,
   DimensionStat,
   PayBand,
+  PayrollTrendPoint,
   RecentChange,
 } from '@salary/shared';
 import prisma from '@config/database';
@@ -102,6 +103,42 @@ export const getPayBands = async (): Promise<PayBand[]> => {
     WHERE e.status = 'ACTIVE'
     GROUP BY e."jobLevel"
     ORDER BY "medianUsd" DESC
+  `;
+};
+
+/**
+ * Monthly payroll cost over the last 12 months (docs/TRADEOFFS.md §6 — SQL,
+ * not app-layer). For each month, a LATERAL as-of join picks each active
+ * employee's salary in effect at that month's end (greatest effectiveDate ≤
+ * month end), normalized to USD. Backed by the (employeeId, effectiveDate)
+ * index so 10k × 12 lookups stay fast.
+ */
+export const getPayrollTrend = async (months = 12): Promise<PayrollTrendPoint[]> => {
+  return prisma.$queryRaw<PayrollTrendPoint[]>`
+    ${FX_CTE},
+    series AS (
+      SELECT generate_series(
+        date_trunc('month', CURRENT_DATE) - make_interval(months => ${months - 1}),
+        date_trunc('month', CURRENT_DATE),
+        interval '1 month'
+      ) AS month
+    )
+    SELECT
+      to_char(s.month, 'YYYY-MM')                       AS "month",
+      COALESCE(ROUND(SUM(asof.amount * fx."rateToUSD")), 0)::float8 AS "payrollUsd"
+    FROM series s
+    JOIN "Employee" e ON e.status = 'ACTIVE'
+    JOIN LATERAL (
+      SELECT sr.amount, sr.currency
+      FROM "SalaryRecord" sr
+      WHERE sr."employeeId" = e.id
+        AND sr."effectiveDate" < (s.month + interval '1 month')
+      ORDER BY sr."effectiveDate" DESC
+      LIMIT 1
+    ) asof ON true
+    JOIN fx ON fx.currency = asof.currency
+    GROUP BY s.month
+    ORDER BY s.month
   `;
 };
 

@@ -27,6 +27,12 @@ export interface PayBand {
   maxUsd: number;
 }
 
+export interface PayrollTrendPoint {
+  /** YYYY-MM */
+  month: string;
+  payrollUsd: number;
+}
+
 export interface RecentChange {
   employeeId: string;
   employeeCode: string;
