@@ -99,7 +99,11 @@
   "employee": {
     "directory": {
       "title": "Employee Directory",
+      "subtitle": "{{total}} employees",
       "searchPlaceholder": "Search by name, email or employee ID",
+      "addEmployee": "Add employee",
+      "allFilter": "All",
+      "empty": "No employees match your filters",
       "filters": {
         "department": "Department",
         "country": "Country",
@@ -115,12 +119,39 @@
         "jobLevel": "Level",
         "status": "Status",
         "currentSalary": "Current salary"
+      },
+      "pagination": {
+        "range": "{{from}}–{{to}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "profile": {
       "title": "Employee Profile",
+      "back": "Back to directory",
       "hireDate": "Hire date",
-      "editTitle": "Edit employee"
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "edit": "Edit",
+      "editTitle": "Edit employee",
+      "createTitle": "Add employee",
+      "notFound": "Employee not found"
+    },
+    "form": {
+      "employeeCode": "Employee ID",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "department": "Department",
+      "country": "Country",
+      "jobLevel": "Job level",
+      "status": "Status",
+      "hireDate": "Hire date",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "salary": {

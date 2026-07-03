@@ -10,6 +10,10 @@ const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPasswordPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
+const EmployeeDirectoryPage = lazy(
+  () => import('@/features/employees/pages/EmployeeDirectoryPage')
+);
+const EmployeeProfilePage = lazy(() => import('@/features/employees/pages/EmployeeProfilePage'));
 
 const withSuspense = (node: React.ReactNode) => (
   <Suspense
@@ -42,7 +46,9 @@ const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           { path: '/', element: withSuspense(<DashboardPage />) },
-          // /employees, /employees/:id, /import register here as features land
+          { path: '/employees', element: withSuspense(<EmployeeDirectoryPage />) },
+          { path: '/employees/:id', element: withSuspense(<EmployeeProfilePage />) },
+          // /import registers here as the feature lands
         ],
       },
     ],
